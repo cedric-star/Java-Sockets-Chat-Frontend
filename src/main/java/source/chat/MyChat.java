@@ -78,7 +78,6 @@ public class MyChat extends JFrame {
         return user;
     }
 
-
     @Override
     public void dispose() {
         System.out.println("Schließe Chat...");
