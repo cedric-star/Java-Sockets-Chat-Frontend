@@ -1,4 +1,6 @@
-package source;
+package source.serializer;
+
+import source.chat.MyClient;
 
 import javax.swing.*;
 import java.awt.*;

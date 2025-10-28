@@ -1,4 +1,4 @@
-package source;
+package source.serializer;
 
 import javax.swing.*;
 import java.util.concurrent.CountDownLatch;

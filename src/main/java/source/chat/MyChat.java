@@ -1,7 +1,8 @@
-package source;
+package source.chat;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 
 public class MyChat extends JFrame {
     MyClient client;
@@ -23,7 +24,7 @@ public class MyChat extends JFrame {
     private void setGUI() {
         setTitle("MyChat");
         setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         chatDisplay.setEditable(false);
         JScrollPane chatScrollPane = new JScrollPane(chatDisplay);
@@ -38,6 +39,20 @@ public class MyChat extends JFrame {
 
         add(chatScrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
+
+        setRandomLocation();
+    }
+
+    private void setRandomLocation() {
+        Random random = new Random();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int maxX = screenSize.width - getWidth();
+        int maxY = screenSize.height - getHeight();
+
+        int x = random.nextInt(Math.max(1, maxX));
+        int y = random.nextInt(Math.max(1, maxY));
+
+        setLocation(x, y);
     }
 
     private void sendMsg() {
@@ -63,8 +78,10 @@ public class MyChat extends JFrame {
         return user;
     }
 
+
     @Override
     public void dispose() {
+        System.out.println("Schließe Chat...");
         client.stopConnection();
         super.dispose();
     }

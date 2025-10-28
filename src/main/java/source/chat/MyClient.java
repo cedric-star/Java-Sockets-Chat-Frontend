@@ -1,13 +1,16 @@
-package source;
+package source.chat;
 
 import java.io.*;
 import java.net.Socket;
 import org.json.*;
+
 public class MyClient {
     private Socket clientSocket;
     private DataOutputStream out;
     private DataInputStream in;
     private final MyChat myChat; // Direkter Verweis auf die MyChat Instanz
+    private ListenerThread listener;
+    private Thread listenerThread;
 
     public MyClient(MyChat chat) { // MyChat im Konstruktor übergeben
         this.myChat = chat;
@@ -27,7 +30,7 @@ public class MyClient {
         }
     }
 
-    private void setChat(String inp) {
+    public void setChat(String inp) {
         // Direkter Aufruf auf MyChat
         if (myChat != null) {
             JSONArray ar = new JSONArray(inp);
@@ -48,18 +51,8 @@ public class MyClient {
     }
 
     private void startListening() {
-        Thread listenerThread = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    while (!clientSocket.isClosed()) {
-                        String completeChat = in.readUTF();
-                        setChat(completeChat);
-                    }
-                } catch (IOException e) {
-                    System.err.println("Fehler beim Hören: " + e.getMessage());
-                }
-            }
-        });
+        listener = new ListenerThread(this);
+        listenerThread = new Thread(listener);
         listenerThread.setDaemon(true);
         listenerThread.start();
     }
@@ -80,9 +73,21 @@ public class MyClient {
         try {
             if (in != null) in.close();
             if (out != null) out.close();
+            if (listener != null) listener.close();
+            if (listenerThread != null) listenerThread.interrupt();
             if (clientSocket != null) clientSocket.close();
+            System.out.println("Socket geschlossen.");
+
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public DataInputStream getIn() {
+        return in;
     }
 }

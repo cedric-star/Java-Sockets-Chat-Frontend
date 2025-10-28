@@ -1,5 +1,8 @@
 package source;
 
+import source.chat.MyChat;
+import source.serializer.MyThread;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,7 +21,7 @@ public class MainFrame extends JFrame {
 
     private void setGUI() {
         setTitle("MyÜbungen");
-        setSize(300, 600);
+        setSize(600, 600);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
@@ -28,6 +31,7 @@ public class MainFrame extends JFrame {
 
         newTFrame.addActionListener(e -> genTFrame());
         newChat.addActionListener(e -> genChat());
+        userName.addActionListener(e -> genChat());
 
         add(buttonPanel);
     }
