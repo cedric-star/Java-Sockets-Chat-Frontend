@@ -1,19 +1,21 @@
-package source.chat;
+package source.connection;
 
 import java.io.*;
 import java.net.Socket;
-import org.json.*;
+import java.nio.file.Files;
+
+import source.app.MainAppWindow;
 
 public class MyClient {
     private Socket clientSocket;
     private DataOutputStream out;
     private DataInputStream in;
-    private final MyChat myChat; // Direkter Verweis auf die MyChat Instanz
+    private final MainAppWindow mainWindow; // Direkter Verweis auf die MyChat Instanz
     private ListenerThread listener;
     private Thread listenerThread;
 
-    public MyClient(MyChat chat) { // MyChat im Konstruktor übergeben
-        this.myChat = chat;
+    public MyClient(MainAppWindow win) { // MyChat im Konstruktor übergeben
+        this.mainWindow = win;
         startConnection("localhost", 16969);
     }
 
@@ -30,25 +32,6 @@ public class MyClient {
         }
     }
 
-    public void setChat(String inp) {
-        // Direkter Aufruf auf MyChat
-        if (myChat != null) {
-            JSONArray ar = new JSONArray(inp);
-            StringBuilder sb = new StringBuilder();
-
-            ar.forEach((item) -> {
-                JSONObject jo = (JSONObject) item;
-                sb.append("[");
-                String s = (myChat.getUser().equals(jo.getString("user"))) ? "Ich" : jo.getString("user");
-                sb.append(s);
-                sb.append("]: ");
-                sb.append(jo.getString("msg").trim());
-                sb.append(System.lineSeparator());
-            });
-
-            myChat.updateChatDisplay(sb.toString());
-        }
-    }
 
     private void startListening() {
         listener = new ListenerThread(this);
@@ -57,13 +40,12 @@ public class MyClient {
         listenerThread.start();
     }
 
-    public void sendMessage(String msg) {
-        JSONObject jo = new JSONObject();
-        jo.put("msg", msg);
-        jo.put("user",myChat.getUser());
+    public void sendFile(String user, File file) {
         try {
-            out.writeUTF(jo.toString());
-            out.flush();
+            out.writeUTF(user);
+            out.writeUTF(file.getName());
+            out.writeLong(file.length());
+            out.write(Files.readAllBytes(file.toPath()));
         } catch (IOException e) {
             System.err.println("Fehler beim Senden: " + e.getMessage());
         }

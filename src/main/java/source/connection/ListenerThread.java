@@ -1,4 +1,4 @@
-package source.chat;
+package source.connection;
 
 import java.io.IOException;
 
@@ -13,8 +13,8 @@ public class ListenerThread implements Runnable {
     public void run() {
         try {
             while (running && !clientRef.getClientSocket().isClosed()) {
+                //überarbeiten...
                 String completeChat = clientRef.getIn().readUTF();
-                clientRef.setChat(completeChat);
             }
         } catch (IOException e) {
             if (running) System.err.println("Fehler beim Hören: " + e.getMessage());

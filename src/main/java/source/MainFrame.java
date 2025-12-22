@@ -1,52 +1,41 @@
 package source;
 
-import source.chat.MyChat;
-import source.serializer.MyThread;
+import source.app.MainAppWindow;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
 
-    JButton newTFrame = new JButton("Start Local Editor");
-    JButton newChat = new JButton("Start Chat");
+    JButton start = new JButton("Start App");
     JTextField userName = new JTextField(30);
 
     public MainFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setGUI();
         setVisible(true);
     }
 
     private void setGUI() {
-        setTitle("MyÜbungen");
+        setTitle("Login/Register");
         setSize(600, 600);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
-        buttonPanel.add(newTFrame);
-        buttonPanel.add(newChat);
-        buttonPanel.add(userName);
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+        panel.add(userName);
+        panel.add(start);
 
-        newTFrame.addActionListener(e -> genTFrame());
-        newChat.addActionListener(e -> genChat());
-        userName.addActionListener(e -> genChat());
+        start.addActionListener(e -> startApp());
+        userName.addActionListener(e -> startApp());
 
-        add(buttonPanel);
+        add(panel);
     }
 
-    private void genTFrame() {
-        MyThread t = new MyThread();
-        t.start();
-    }
-
-    private void genChat() {
+    private void startApp() {
         if (!userName.getText().isEmpty()) {
-            new MyChat(userName.getText());
+            new MainAppWindow(userName.getText());
             userName.setText("");
         }
-
     }
 
 
