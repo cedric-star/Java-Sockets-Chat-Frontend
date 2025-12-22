@@ -1,5 +1,6 @@
 package source.app;
 
+import source.IO;
 import source.connection.MyClient;
 
 import javax.swing.*;
@@ -31,7 +32,9 @@ public class MainAppWindow extends JFrame {
                 JFileChooser chooser = new JFileChooser();
                 chooser.showOpenDialog(panel1);
                 File file = chooser.getSelectedFile();
-                    client.sendFile(username, file);
+                client.sendFile(username, file);
+
+                IO.saveFile(username, file);
             }
         });
         changeWeb.addActionListener(new ActionListener() {
@@ -40,5 +43,9 @@ public class MainAppWindow extends JFrame {
 
             }
         });
+    }
+
+    private JPanel genMusicDisplay() {
+        return null;
     }
 }

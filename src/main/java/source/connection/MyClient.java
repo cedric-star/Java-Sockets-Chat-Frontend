@@ -32,6 +32,10 @@ public class MyClient {
         }
     }
 
+    private void sendFile(String fileName) {
+
+    }
+
 
     private void startListening() {
         listener = new ListenerThread(this);
