@@ -28,6 +28,8 @@ public class MyClient {
             in = new DataInputStream(clientSocket.getInputStream());
 
             syncFiles(mainWindow.getUsername());
+            mainWindow.setMusicItems();
+
 
         } catch (IOException e) {
             System.err.println("Could not connect to " + ip + ":" + port + "\n" + e.getMessage());

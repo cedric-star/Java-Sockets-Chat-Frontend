@@ -1,7 +1,5 @@
 package source.app;
 
-import source.IO;
-
 import java.io.File;
 
 public class MusicItem {
@@ -22,8 +20,7 @@ public class MusicItem {
         this.genre = "";
         this.duration = "";
         this.mp3File = mp3File;
-
-        genAttributesFromXML();
+        this.xmlFile = null;
     }
 
     private void genAttributesFromXML() {
@@ -43,7 +40,7 @@ public class MusicItem {
         //schauen ob xml mit name von mp3 existiert
         //wenn ja xml file setzen
         //mp3File.
-        this.xmlFile = IO.genXMLFromMP3(this.mp3File);
+        //this.xmlFile = IO.genXMLFromMP3(this.mp3File);
 
 
     }

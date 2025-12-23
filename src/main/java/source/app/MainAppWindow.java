@@ -5,6 +5,7 @@ import source.connection.MyClient;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -19,18 +20,14 @@ public class MainAppWindow extends JFrame {
 
     private String username;
     private MyClient client;
+    private ArrayList<MusicItem> musicItems;
     private DefaultListModel<String> listModel;
 
     public MainAppWindow(String username) {
         this.username = username;
         client = new MyClient(this);
 
-
-
-
         setContentPane(panel1);
-
-
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(800, 600);
@@ -62,19 +59,57 @@ public class MainAppWindow extends JFrame {
     }
 
     //aufruf einmalig beim initiieren des frames
+    // Vereinfachte Version in MainAppWindow:
     private void genMusicDisplay() {
         ArrayList<File> files = IO.readAllMP3(this.username);
-        System.out.println("test: length from mp3lsit"+files.size());
+
 
         listModel = new DefaultListModel<>();
-
-        for  (File file : files) {
-            listModel.addElement(file.getName());
-        }
-
         musicList.setModel(listModel);
 
+        //einmal für jedes listenelement rendern
+        musicList.setCellRenderer(new ListCellRenderer<String>() {
+            @Override
+            public Component getListCellRendererComponent(JList<? extends String> list,
+                                                          String value,
+                                                          int index,
+                                                          boolean isSelected,
+                                                          boolean cellHasFocus) {
+
+                JPanel panel = new JPanel(new BorderLayout());
+
+                JTextArea textArea = new JTextArea("Song: " + value + "\nArtist: Platzhalter");
+                textArea.setEditable(false);
+
+                JPanel btnPanel = new JPanel(new BorderLayout());
+                JButton playBtn = new JButton("Edit");
+                JButton delBtn = new JButton("Delete");
+
+
+                btnPanel.add(playBtn, BorderLayout.NORTH);
+                btnPanel.add(delBtn, BorderLayout.SOUTH);
+
+                panel.add(textArea, BorderLayout.CENTER);
+                panel.add(btnPanel, BorderLayout.EAST);
+
+                return panel;
+            }
+        });
+
+        for (File file : files) {
+            listModel.addElement(file.getName());
+        }
     }
 
     public String getUsername() {return username;}
+
+    public void setMusicItems() {
+        ArrayList<File> mp3s = IO.readAllMP3(this.username);
+        ArrayList<MusicItem> musicItems = new ArrayList<>();
+
+        for (File mp3 : mp3s) {
+            musicItems.add(new MusicItem(mp3, username));
+        }
+
+    }
 }
