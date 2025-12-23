@@ -3,7 +3,9 @@ package source.connection;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
+import source.IO;
 import source.app.MainAppWindow;
 
 public class MyClient {
@@ -25,17 +27,12 @@ public class MyClient {
             out = new DataOutputStream(clientSocket.getOutputStream());
             in = new DataInputStream(clientSocket.getInputStream());
 
-            startListening();
+            syncFiles(mainWindow.getUsername());
 
         } catch (IOException e) {
             System.err.println("Could not connect to " + ip + ":" + port + "\n" + e.getMessage());
         }
     }
-
-    private void sendFile(String fileName) {
-
-    }
-
 
     private void startListening() {
         listener = new ListenerThread(this);
@@ -46,13 +43,48 @@ public class MyClient {
 
     public void sendFile(String user, File file) {
         try {
+            out.writeByte(1);
             out.writeUTF(user);
             out.writeUTF(file.getName());
             out.writeLong(file.length());
             out.write(Files.readAllBytes(file.toPath()));
+            out.flush();
         } catch (IOException e) {
             System.err.println("Fehler beim Senden: " + e.getMessage());
         }
+    }
+
+    public void deleteFile(String user, String fileName) {
+        try {
+            out.writeByte(2);
+            out.writeUTF(user);
+            out.writeUTF(fileName);
+            out.flush();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void syncFiles(String user) {
+        try {
+            out.writeByte(3);
+            out.writeUTF(user);
+            out.flush();
+
+
+            int fileNum = in.readInt();
+            ArrayList<File> files = new ArrayList<File>();
+            for  (int i = 0; i < fileNum; i++) {
+                String fileName = in.readUTF();
+                Long fileLength = in.readLong();
+                byte[] content = in.readNBytes(Math.toIntExact(fileLength));
+
+                IO.saveFile(user, fileName, content);
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 
     public void stopConnection() {
