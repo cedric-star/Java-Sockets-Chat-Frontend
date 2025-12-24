@@ -4,11 +4,13 @@ import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -89,7 +91,7 @@ public class IO {
     }
 
 
-    public synchronized ArrayList<String> setXMLAttributes(File xml) {
+    public synchronized ArrayList<String> getXMLAttributes(File xml) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         ArrayList<String> attr = new ArrayList<>();
@@ -97,11 +99,15 @@ public class IO {
             builder = factory.newDocumentBuilder();
             Document document = builder.parse(xml);
 
-            attr.add(document.getDocumentElement().getAttribute("title"));
-            attr.add(document.getDocumentElement().getAttribute("artist"));
-            attr.add(document.getDocumentElement().getAttribute("album"));
-            attr.add(document.getDocumentElement().getAttribute("genre"));
-            attr.add(document.getDocumentElement().getAttribute("duration"));
+            XPathFactory xpfactory = XPathFactory.newInstance();
+            XPath xpath = xpfactory.newXPath();
+            String base = "/file/data/";
+
+            attr.add(xpath.evaluate(base+"title", document));
+            attr.add(xpath.evaluate(base+"artist", document));
+            attr.add(xpath.evaluate(base+"album", document));
+            attr.add(xpath.evaluate(base+"genre", document));
+            attr.add(xpath.evaluate(base+"duration", document));
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -171,7 +177,7 @@ public class IO {
         } catch (Exception e) {
             album = "no_album";
         }
-        sb.append("        <album>"+title+"</album>\n");
+        sb.append("        <album>"+album+"</album>\n");
 
         String genre;
         try {
@@ -179,7 +185,7 @@ public class IO {
         } catch (Exception e) {
             genre = "no_genre";
         }
-        sb.append("        <genre>"+artist+"</genre>\n");
+        sb.append("        <genre>"+genre+"</genre>\n");
 
         String duration;
         try {

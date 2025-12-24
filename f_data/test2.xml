@@ -4,8 +4,8 @@
     <data>
         <title>no_title</title>
         <artist>no_artist</artist>
-        <album>no_title</album>
-        <genre>no_artist</genre>
+        <album>no_album</album>
+        <genre>no_genre</genre>
         <duration>60s</duration>
     </data>
 </file>

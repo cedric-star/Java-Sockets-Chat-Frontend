@@ -30,7 +30,6 @@ public class MyClient {
             in = new DataInputStream(clientSocket.getInputStream());
 
             syncFiles(mainWindow.getUsername());
-            mainWindow.setMusicItems();
 
 
         } catch (IOException e) {
@@ -45,14 +44,23 @@ public class MyClient {
         listenerThread.start();
     }
 
-    public void sendFile(String user, File file) {
+    public void sendFile(String user, File mp3file) {
         try {
             out.writeByte(1);
             out.writeUTF(user);
-            out.writeUTF(file.getName());
-            out.writeLong(file.length());
-            out.write(Files.readAllBytes(file.toPath()));
+            out.writeUTF(mp3file.getName());
+            out.writeLong(mp3file.length());
+            out.write(Files.readAllBytes(mp3file.toPath()));
+
+            File xmlFile = io.genXMLFromMP3(mp3file, user);
+            out.writeByte(1);
+            out.writeUTF(user);
+            out.writeUTF(xmlFile.getName());
+            out.writeLong(xmlFile.length());
+            out.write(Files.readAllBytes(xmlFile.toPath()));
             out.flush();
+
+
         } catch (IOException e) {
             System.err.println("Fehler beim Senden: " + e.getMessage());
         }

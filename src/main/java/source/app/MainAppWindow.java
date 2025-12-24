@@ -20,7 +20,6 @@ public class MainAppWindow extends JFrame {
 
     private String username;
     private MyClient client;
-    private ArrayList<MusicItem> musicItems;
     private DefaultListModel<MusicItem> listModel;
     private IO io;
 
@@ -46,13 +45,14 @@ public class MainAppWindow extends JFrame {
                 chooser.setFileFilter(filter);
 
                 chooser.showOpenDialog(panel1);
-                File file = chooser.getSelectedFile();
-                client.sendFile(username, file);
+                File mp3file = chooser.getSelectedFile();
 
-                File newFile = io.saveFile(username, file);
+                File newFile = io.saveFile(username, mp3file);
                 MusicItem newItem = new MusicItem(newFile, username);
-                musicItems.add(newItem);
                 listModel.addElement(newItem);
+
+                client.sendFile(username, mp3file);
+
             }
         });
         changeWeb.addActionListener(new ActionListener() {
@@ -108,13 +108,4 @@ public class MainAppWindow extends JFrame {
 
     public String getUsername() {return username;}
 
-    public void setMusicItems() {
-        ArrayList<File> mp3s = io.readAllMP3(this.username);
-        musicItems = new ArrayList<>();
-
-        for (File mp3 : mp3s) {
-            musicItems.add(new MusicItem(mp3, username));
-        }
-
-    }
 }

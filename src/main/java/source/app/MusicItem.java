@@ -3,7 +3,6 @@ package source.app;
 import source.IO;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MusicItem {
@@ -34,45 +33,32 @@ public class MusicItem {
         String xmlName = mp3File.getName().replace(".mp3", ".xml");
         this.xmlFile = new File(user+"_data",  xmlName);
         registerOrGenXML();
-
-        title = "titl";
-        artist = "art";
-        album = "alb";
-        genre = "gen";
-        duration = "dur";
     }
 
     private void registerOrGenXML() {
         if (!xmlFile.exists()) {
             this.xmlFile = io.genXMLFromMP3(mp3File, user);
-        } else {
 
-            ArrayList<String> lst = io.setXMLAttributes(xmlFile);
-            title = lst.get(0);
-            artist = lst.get(1);
-            album = lst.get(2);
-            genre = lst.get(3);
-            duration = lst.get(4);
         }
 
-        //schauen ob xml mit name von mp3 existiert
-        //wenn ja xml file setzen
-        //mp3File.
-        //this.xmlFile = IO.genXMLFromMP3(this.mp3File);
-
-
+        ArrayList<String> lst = io.getXMLAttributes(xmlFile);
+        title = lst.get(0);
+        artist = lst.get(1);
+        album = lst.get(2);
+        genre = lst.get(3);
+        duration = lst.get(4);
     }
 
     @Override
     public String toString() {
-        return "MusicItemToString{" +
-                "\nuser='" + user +
-                "\ntitle='" + title +
-                "\nartist='" + artist +
-                "\nalbum='" + album +
-                "\ngenre='" + genre +
-                "\nduration='" + duration +
-                "\n}";
+        StringBuilder sb = new StringBuilder();
+        sb.append(mp3File.getName());
+        sb.append("\n    Title: " + title + "\n");
+        sb.append("    Artist: " + artist + "\n");
+        sb.append("    Album: " + album + "\n");
+        sb.append("    Genre: " + genre + "\n");
+        sb.append("    Duration: " + duration + "\n");
+        return sb.toString();
     }
 
     public String getTitle() {return title;}
