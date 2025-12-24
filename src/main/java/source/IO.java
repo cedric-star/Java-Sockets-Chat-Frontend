@@ -3,8 +3,12 @@ package source;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
+import org.w3c.dom.Document;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -22,7 +26,6 @@ public class IO {
         if (INSTANCE == null) {
             INSTANCE = new IO();
         }
-
         return INSTANCE;
     }
 
@@ -82,8 +85,24 @@ public class IO {
     }
 
 
-    public synchronized void setXMLAttributes(File xml, ArrayList<String> attribute) {
+    public synchronized ArrayList<String> setXMLAttributes(File xml) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
+        ArrayList<String> attr = new ArrayList<>();
+        try {
+            builder = factory.newDocumentBuilder();
+            Document document = builder.parse(xml);
 
+            attr.add(document.getDocumentElement().getAttribute("title"));
+            attr.add(document.getDocumentElement().getAttribute("artist"));
+            attr.add(document.getDocumentElement().getAttribute("album"));
+            attr.add(document.getDocumentElement().getAttribute("genre"));
+            attr.add(document.getDocumentElement().getAttribute("duration"));
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return attr;
     }
 
     public synchronized File genXMLFromMP3(File mp3file,  String user) {
@@ -141,6 +160,30 @@ public class IO {
         }
         sb.append("        <artist>"+artist+"</artist>\n");
 
+
+        String album;
+        try {
+            album = audioFile.getTag().getFirst(FieldKey.ALBUM);
+        } catch (Exception e) {
+            album = "no_album";
+        }
+        sb.append("        <album>"+title+"</album>\n");
+
+        String genre;
+        try {
+            genre = audioFile.getTag().getFirst(FieldKey.GENRE);
+        } catch (Exception e) {
+            genre = "no_genre";
+        }
+        sb.append("        <genre>"+artist+"</genre>\n");
+
+        String duration;
+        try {
+            duration = Integer.toString(audioFile.getAudioHeader().getTrackLength())+"s";
+        } catch (Exception e) {
+            duration = "couldnt find duration";
+        }
+        sb.append("        <duration>"+artist+"</duration>\n");
         sb.append("    </data>\n");
         sb.append("</file>");
 

@@ -3,6 +3,7 @@ package source.app;
 import source.IO;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MusicItem {
@@ -44,15 +45,13 @@ public class MusicItem {
         if (!xmlFile.exists()) {
             this.xmlFile = io.genXMLFromMP3(mp3File, user);
         } else {
-            ArrayList<String> attributes = new ArrayList<String>();
-            attributes.add(user);
-            attributes.add(title);
-            attributes.add(artist);
-            attributes.add(album);
-            attributes.add(genre);
-            attributes.add(duration);
 
-            io.setXMLAttributes(xmlFile, attributes);
+            ArrayList<String> lst = io.setXMLAttributes(xmlFile);
+            title = lst.get(0);
+            artist = lst.get(1);
+            album = lst.get(2);
+            genre = lst.get(3);
+            duration = lst.get(4);
         }
 
         //schauen ob xml mit name von mp3 existiert
