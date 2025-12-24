@@ -22,8 +22,10 @@ public class MainAppWindow extends JFrame {
     private MyClient client;
     private ArrayList<MusicItem> musicItems;
     private DefaultListModel<String> listModel;
+    private IO io;
 
     public MainAppWindow(String username) {
+        this.io = IO.getInstance();
         this.username = username;
         client = new MyClient(this);
 
@@ -47,7 +49,7 @@ public class MainAppWindow extends JFrame {
                 File file = chooser.getSelectedFile();
                 client.sendFile(username, file);
 
-                IO.saveFile(username, file);
+                io.saveFile(username, file);
             }
         });
         changeWeb.addActionListener(new ActionListener() {
@@ -61,7 +63,7 @@ public class MainAppWindow extends JFrame {
     //aufruf einmalig beim initiieren des frames
     // Vereinfachte Version in MainAppWindow:
     private void genMusicDisplay() {
-        ArrayList<File> files = IO.readAllMP3(this.username);
+        ArrayList<File> files = io.readAllMP3(this.username);
 
 
         listModel = new DefaultListModel<>();
@@ -104,7 +106,7 @@ public class MainAppWindow extends JFrame {
     public String getUsername() {return username;}
 
     public void setMusicItems() {
-        ArrayList<File> mp3s = IO.readAllMP3(this.username);
+        ArrayList<File> mp3s = io.readAllMP3(this.username);
         ArrayList<MusicItem> musicItems = new ArrayList<>();
 
         for (File mp3 : mp3s) {

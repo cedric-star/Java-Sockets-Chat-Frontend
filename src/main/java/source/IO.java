@@ -14,7 +14,22 @@ import java.util.logging.Level;
 
 public class IO {
 
-    public static synchronized void saveFile(String user, File f) {
+    private static IO INSTANCE;
+    private IO() {}
+    private String user;
+
+    public static IO getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new IO();
+        }
+
+        return INSTANCE;
+    }
+
+    public void setUser(String user) {this.user = user;}
+    public String getUser() {return this.user;}
+
+    public synchronized void saveFile(String user, File f) {
         System.out.println("\nSaving File: "+f.getName());
 
         File baseDir = new File((user+"_data"));
@@ -30,7 +45,7 @@ public class IO {
         System.out.println("File saved: "+newFile.getAbsolutePath());
     }
 
-    public static synchronized void saveFile(String user, String fileName, byte[] content) {
+    public synchronized void saveFile(String user, String fileName, byte[] content) {
         System.out.println("\nSaving File: "+fileName);
 
         File baseDir = new File(user+"_data");
@@ -48,7 +63,7 @@ public class IO {
         System.out.println("File saved: "+newFile.getAbsolutePath());
     }
 
-    public static synchronized ArrayList<File> readAllMP3(String user) {
+    public synchronized ArrayList<File> readAllMP3(String user) {
         File baseDir = new File(user+"_data");
         if (!baseDir.exists()) baseDir.mkdirs();
 
@@ -67,8 +82,11 @@ public class IO {
     }
 
 
+    public synchronized void setXMLAttributes(File xml, ArrayList<String> attribute) {
 
-    public static synchronized File genXMLFromMP3(File mp3file,  String user) {
+    }
+
+    public synchronized File genXMLFromMP3(File mp3file,  String user) {
         File baseDir = new File(user+"_data");
         if (!baseDir.exists()) baseDir.mkdirs();
 
@@ -90,7 +108,7 @@ public class IO {
         return xml;
     }
 
-    private static synchronized StringBuilder getXMLContent(File mp3file, String user) {
+    private synchronized StringBuilder getXMLContent(File mp3file, String user) {
         AudioFile audioFile;
 
         try {

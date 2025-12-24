@@ -15,8 +15,10 @@ public class MyClient {
     private final MainAppWindow mainWindow; // Direkter Verweis auf die MyChat Instanz
     private ListenerThread listener;
     private Thread listenerThread;
+    private IO io;
 
     public MyClient(MainAppWindow win) { // MyChat im Konstruktor übergeben
+        this.io = IO.getInstance();
         this.mainWindow = win;
         startConnection("localhost", 16969);
     }
@@ -81,7 +83,7 @@ public class MyClient {
                 Long fileLength = in.readLong();
                 byte[] content = in.readNBytes(Math.toIntExact(fileLength));
 
-                IO.saveFile(user, fileName, content);
+                io.saveFile(user, fileName, content);
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
