@@ -27,9 +27,10 @@ public class MusicItem {
         this.mp3File = mp3File;
         this.xmlFile = null;
         this.io = IO.getInstance();
+        genAttributesFromXML();
     }
 
-    private void genAttributesFromXML() {
+    public void genAttributesFromXML() {
         String xmlName = mp3File.getName().replace(".mp3", ".xml");
         this.xmlFile = new File(user+"_data",  xmlName);
         registerOrGenXML();
@@ -61,5 +62,19 @@ public class MusicItem {
 
 
     }
+
+    @Override
+    public String toString() {
+        return "MusicItemToString{" +
+                "\nuser='" + user +
+                "\ntitle='" + title +
+                "\nartist='" + artist +
+                "\nalbum='" + album +
+                "\ngenre='" + genre +
+                "\nduration='" + duration +
+                "\n}";
+    }
+
+    public String getTitle() {return title;}
 
 }

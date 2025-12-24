@@ -32,7 +32,7 @@ public class IO {
     public void setUser(String user) {this.user = user;}
     public String getUser() {return this.user;}
 
-    public synchronized void saveFile(String user, File f) {
+    public synchronized File saveFile(String user, File f) {
         System.out.println("\nSaving File: "+f.getName());
 
         File baseDir = new File((user+"_data"));
@@ -46,9 +46,11 @@ public class IO {
             System.err.println(e.getMessage());
         }
         System.out.println("File saved: "+newFile.getAbsolutePath());
+
+        return newFile;
     }
 
-    public synchronized void saveFile(String user, String fileName, byte[] content) {
+    public synchronized File saveFile(String user, String fileName, byte[] content) {
         System.out.println("\nSaving File: "+fileName);
 
         File baseDir = new File(user+"_data");
@@ -64,6 +66,8 @@ public class IO {
             System.err.println(e.getMessage());
         }
         System.out.println("File saved: "+newFile.getAbsolutePath());
+
+        return newFile;
     }
 
     public synchronized ArrayList<File> readAllMP3(String user) {
@@ -183,7 +187,7 @@ public class IO {
         } catch (Exception e) {
             duration = "couldnt find duration";
         }
-        sb.append("        <duration>"+artist+"</duration>\n");
+        sb.append("        <duration>"+duration+"</duration>\n");
         sb.append("    </data>\n");
         sb.append("</file>");
 

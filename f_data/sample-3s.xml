@@ -6,6 +6,6 @@
         <artist></artist>
         <album></album>
         <genre></genre>
-        <duration></duration>
+        <duration>3s</duration>
     </data>
 </file>

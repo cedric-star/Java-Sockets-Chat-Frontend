@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class MainAppWindow extends JFrame {
     private JPanel panel1;
-    private JList musicList;
+    private JList<MusicItem> musicList;
     private JButton addNewSong;
     private JButton changeWeb;
     private JScrollPane scroller;
@@ -21,7 +21,7 @@ public class MainAppWindow extends JFrame {
     private String username;
     private MyClient client;
     private ArrayList<MusicItem> musicItems;
-    private DefaultListModel<String> listModel;
+    private DefaultListModel<MusicItem> listModel;
     private IO io;
 
     public MainAppWindow(String username) {
@@ -49,7 +49,10 @@ public class MainAppWindow extends JFrame {
                 File file = chooser.getSelectedFile();
                 client.sendFile(username, file);
 
-                io.saveFile(username, file);
+                File newFile = io.saveFile(username, file);
+                MusicItem newItem = new MusicItem(newFile, username);
+                musicItems.add(newItem);
+                listModel.addElement(newItem);
             }
         });
         changeWeb.addActionListener(new ActionListener() {
@@ -64,29 +67,27 @@ public class MainAppWindow extends JFrame {
     // Vereinfachte Version in MainAppWindow:
     private void genMusicDisplay() {
         ArrayList<File> files = io.readAllMP3(this.username);
-
-
         listModel = new DefaultListModel<>();
         musicList.setModel(listModel);
 
         //einmal für jedes listenelement rendern
-        musicList.setCellRenderer(new ListCellRenderer<String>() {
+        musicList.setCellRenderer(new ListCellRenderer<MusicItem>() {
             @Override
-            public Component getListCellRendererComponent(JList<? extends String> list,
-                                                          String value,
+            public Component getListCellRendererComponent(JList<? extends MusicItem> list,
+                                                          MusicItem value,
                                                           int index,
                                                           boolean isSelected,
                                                           boolean cellHasFocus) {
 
                 JPanel panel = new JPanel(new BorderLayout());
 
-                JTextArea textArea = new JTextArea("Song: " + value + "\nArtist: Platzhalter");
+                // Hier verwenden wir getTitle() vom MusicItem
+                JTextArea textArea = new JTextArea(value.toString());
                 textArea.setEditable(false);
 
                 JPanel btnPanel = new JPanel(new BorderLayout());
                 JButton playBtn = new JButton("Edit");
                 JButton delBtn = new JButton("Delete");
-
 
                 btnPanel.add(playBtn, BorderLayout.NORTH);
                 btnPanel.add(delBtn, BorderLayout.SOUTH);
@@ -99,15 +100,17 @@ public class MainAppWindow extends JFrame {
         });
 
         for (File file : files) {
-            listModel.addElement(file.getName());
+            MusicItem item = new MusicItem(file, username);
+            listModel.addElement(item);
         }
+
     }
 
     public String getUsername() {return username;}
 
     public void setMusicItems() {
         ArrayList<File> mp3s = io.readAllMP3(this.username);
-        ArrayList<MusicItem> musicItems = new ArrayList<>();
+        musicItems = new ArrayList<>();
 
         for (File mp3 : mp3s) {
             musicItems.add(new MusicItem(mp3, username));
