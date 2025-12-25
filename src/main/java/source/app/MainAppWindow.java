@@ -95,11 +95,24 @@ public class MainAppWindow extends JFrame {
             attributePanel.add(new JLabel(item.getMP3FileName()+ " | "));
 
 
+
             JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             titlePanel.add(new JLabel("Title: "));
             JTextField titleField = new JTextField(item.getTitle());
             titlePanel.add(titleField);
             attributePanel.add(titlePanel);
+
+            JPanel artistPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            artistPanel.add(new JLabel("Artist: "));
+            JTextField artistField = new JTextField(item.getArtist());
+            artistPanel.add(artistField);
+            attributePanel.add(artistPanel);
+
+            JPanel albumPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            albumPanel.add(new JLabel("Genre: "));
+            JTextField albumField = new JTextField(item.getAlbum());
+            albumPanel.add(albumField);
+            attributePanel.add(albumPanel);
 
             JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             genrePanel.add(new JLabel("Genre: "));
@@ -107,19 +120,18 @@ public class MainAppWindow extends JFrame {
             genrePanel.add(genreField);
             attributePanel.add(genrePanel);
 
-
             itemPanel.add(attributePanel, BorderLayout.WEST);
 
-
-            JButton delBtn = new JButton("Löschen");
+            JButton delBtn = new JButton("Delete");
             delBtn.addActionListener(e -> {
                 contentPanel.remove(itemPanel);
                 contentPanel.revalidate();
                 contentPanel.repaint();
 
+                item.remove(client);
             });
 
-            JButton editBtn = new JButton("Edit");
+            JButton editBtn = new JButton("Save Edit");
 
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             buttonPanel.add(delBtn);
@@ -127,6 +139,7 @@ public class MainAppWindow extends JFrame {
 
             itemPanel.add(buttonPanel, BorderLayout.EAST);
             itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
             contentPanel.add(itemPanel);
 
 

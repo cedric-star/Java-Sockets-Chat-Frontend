@@ -1,6 +1,7 @@
 package source.app;
 
 import source.IO;
+import source.connection.MyClient;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -87,5 +88,12 @@ public class MusicItem {
 
     public String getMP3FileName() {
         return mp3File.getName();
+    }
+
+    public void remove(MyClient client) {
+        this.mp3File.delete();
+        this.xmlFile.delete();
+        client.deleteFile(user, mp3File.getName());
+        client.deleteFile(user, xmlFile.getName());
     }
 }
