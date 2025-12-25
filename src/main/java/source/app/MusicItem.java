@@ -61,6 +61,31 @@ public class MusicItem {
         return sb.toString();
     }
 
-    public String getTitle() {return title;}
+    public String getTitle() {
+        return title;
+    }
 
+    public String getUser() {
+        return user;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public String getMP3FileName() {
+        return mp3File.getName();
+    }
 }

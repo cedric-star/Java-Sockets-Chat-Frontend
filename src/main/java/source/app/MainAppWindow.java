@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 public class MainAppWindow extends JFrame {
     private JPanel panel1;
-    private JList<MusicItem> musicList;
     private JButton addNewSong;
     private JButton changeWeb;
     private JScrollPane scroller;
+    private JPanel contentPanel;
 
     private String username;
     private MyClient client;
@@ -28,13 +28,8 @@ public class MainAppWindow extends JFrame {
         this.username = username;
         client = new MyClient(this);
 
+        setGui();
         setContentPane(panel1);
-
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(800, 600);
-
-        genMusicDisplay();
-
         setVisible(true);
 
         addNewSong.addActionListener(new ActionListener() {
@@ -63,47 +58,79 @@ public class MainAppWindow extends JFrame {
         });
     }
 
+    private void setGui() {
+        JPanel bottomBtnPanel = new JPanel(new FlowLayout());
+        bottomBtnPanel.add(addNewSong = new JButton("Add New Song"), BorderLayout.SOUTH);
+        bottomBtnPanel.add(changeWeb = new JButton("Change Web"), BorderLayout.SOUTH);
+
+        genMusicDisplay();
+        scroller = new JScrollPane(contentPanel);
+
+        panel1 = new JPanel();
+        panel1.setLayout(new BorderLayout());
+
+        panel1.add(bottomBtnPanel, BorderLayout.SOUTH);
+        panel1.add(scroller, BorderLayout.CENTER);
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(800, 600);
+    }
+
     //aufruf einmalig beim initiieren des frames
     // Vereinfachte Version in MainAppWindow:
     private void genMusicDisplay() {
         ArrayList<File> files = io.readAllMP3(this.username);
-        listModel = new DefaultListModel<>();
-        musicList.setModel(listModel);
-
-        //einmal für jedes listenelement rendern
-        musicList.setCellRenderer(new ListCellRenderer<MusicItem>() {
-            @Override
-            public Component getListCellRendererComponent(JList<? extends MusicItem> list,
-                                                          MusicItem value,
-                                                          int index,
-                                                          boolean isSelected,
-                                                          boolean cellHasFocus) {
-
-                JPanel panel = new JPanel(new BorderLayout());
-
-                // Hier verwenden wir getTitle() vom MusicItem
-                JTextArea textArea = new JTextArea(value.toString());
-                textArea.setEditable(false);
-
-                JPanel btnPanel = new JPanel(new BorderLayout());
-                JButton playBtn = new JButton("Edit");
-                JButton delBtn = new JButton("Delete");
-
-                btnPanel.add(playBtn, BorderLayout.NORTH);
-                btnPanel.add(delBtn, BorderLayout.SOUTH);
-
-                panel.add(textArea, BorderLayout.CENTER);
-                panel.add(btnPanel, BorderLayout.EAST);
-
-                return panel;
-            }
-        });
+        contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
         for (File file : files) {
             MusicItem item = new MusicItem(file, username);
-            listModel.addElement(item);
-        }
 
+            JPanel itemPanel = new JPanel(new BorderLayout());
+
+
+            JPanel attributePanel = new JPanel();
+            attributePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+            attributePanel.add(new JLabel(item.getMP3FileName()+ " | "));
+
+
+            JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            titlePanel.add(new JLabel("Title: "));
+            JTextField titleField = new JTextField(item.getTitle());
+            titlePanel.add(titleField);
+            attributePanel.add(titlePanel);
+
+            JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            genrePanel.add(new JLabel("Genre: "));
+            JTextField genreField = new JTextField(item.getGenre());
+            genrePanel.add(genreField);
+            attributePanel.add(genrePanel);
+
+
+            itemPanel.add(attributePanel, BorderLayout.WEST);
+
+
+            JButton delBtn = new JButton("Löschen");
+            delBtn.addActionListener(e -> {
+                contentPanel.remove(itemPanel);
+                contentPanel.revalidate();
+                contentPanel.repaint();
+
+            });
+
+            JButton editBtn = new JButton("Edit");
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.add(delBtn);
+            buttonPanel.add(editBtn);
+
+            itemPanel.add(buttonPanel, BorderLayout.EAST);
+            itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            contentPanel.add(itemPanel);
+
+
+        }
     }
 
     public String getUsername() {return username;}
