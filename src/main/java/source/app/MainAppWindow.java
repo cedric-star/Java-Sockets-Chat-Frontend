@@ -88,13 +88,10 @@ public class MainAppWindow extends JFrame {
 
             JPanel itemPanel = new JPanel(new BorderLayout());
 
-
             JPanel attributePanel = new JPanel();
             attributePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
             attributePanel.add(new JLabel(item.getMP3FileName()+ " | "));
-
-
 
             JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             titlePanel.add(new JLabel("Title: "));
@@ -132,6 +129,9 @@ public class MainAppWindow extends JFrame {
             });
 
             JButton editBtn = new JButton("Save Edit");
+            editBtn.addActionListener(e -> {
+               //hier fehlt code
+            });
 
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             buttonPanel.add(delBtn);
@@ -141,8 +141,6 @@ public class MainAppWindow extends JFrame {
             itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
             contentPanel.add(itemPanel);
-
-
         }
     }
 
