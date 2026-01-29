@@ -166,6 +166,8 @@ public class IO {
             // Wurzelelement erstellen
             Element rootElement = doc.createElement("files");
             rootElement.setAttribute("user", user);
+            rootElement.setAttribute("sortby", "artist");
+            rootElement.setAttribute("sortorder", "descending");
             doc.appendChild(rootElement);
 
             // Für jede MP3-Datei ein Element hinzufügen
