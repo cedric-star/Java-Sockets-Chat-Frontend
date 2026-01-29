@@ -38,11 +38,11 @@ public class MusicItem {
 
     private void registerOrGenXML() {
         if (!xmlFile.exists()) {
-            this.xmlFile = io.genXMLFromMP3(mp3File, user);
+            this.xmlFile = null;//io.genXMLFromMP3(mp3File, user);
 
         }
 
-        ArrayList<String> lst = io.getXMLAttributes(xmlFile);
+        ArrayList<String> lst = null;// io.getXMLAttributes(xmlFile);
         title = lst.get(0);
         artist = lst.get(1);
         album = lst.get(2);

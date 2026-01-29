@@ -52,7 +52,7 @@ public class MyClient {
             out.writeLong(mp3file.length());
             out.write(Files.readAllBytes(mp3file.toPath()));
 
-            File xmlFile = io.genXMLFromMP3(mp3file, user);
+            File xmlFile = io.getUserXMLFile(user);
             out.writeByte(1);
             out.writeUTF(user);
             out.writeUTF(xmlFile.getName());
