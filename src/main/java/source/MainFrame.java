@@ -36,6 +36,6 @@ public class MainFrame extends JFrame {
             new MainAppWindow(userName.getText());
             userName.setText("");
         }
-        setVisible(false);
+        //setVisible(false);
     }
 }

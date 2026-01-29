@@ -57,7 +57,7 @@ public class MainAppWindow extends JFrame {
         panel1.add(scroller, BorderLayout.CENTER);
         panel1.add(bottomBtnPanel, BorderLayout.SOUTH);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
     }
 
@@ -116,6 +116,9 @@ public class MainAppWindow extends JFrame {
             contentPanel.remove(itemPanel);
             contentPanel.revalidate();
             contentPanel.repaint();
+
+            client.deleteFile(username, mp3.get(0));
+            client.sendFile(username, new File (new File (username+"_data"), username+"_music.xml"));
         });
 
         JButton saveBtn = new JButton("Save Edit");
@@ -126,12 +129,13 @@ public class MainAppWindow extends JFrame {
             newMP3.set(1, titleField.getText());
             newMP3.set(2, artistField.getText());
             newMP3.set(3, albumField.getText());
-            newMP3.set(4, ge.getText());
+            newMP3.set(4, genreField.getText());
 
             System.out.println("kkkkkkkkkk:"+newMP3.toString());
             io.updateMP3XMLAttributes(username, newMP3);
 
             client.sendFile(username, new File (new File (username+"_data"),newMP3.get(0)));
+            client.sendFile(username, new File (new File (username+"_data"), username+"_music.xml"));
         });
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -148,3 +152,4 @@ public class MainAppWindow extends JFrame {
         return username;
     }
 }
+//löschen von dateien wird glaube nicht korrekt synchronisiert
