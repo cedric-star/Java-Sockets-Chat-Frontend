@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <files sortby="artist" sortorder="descending" user="a">
-    <mp3 filename="test2.mp3">
-        <filename>test2.mp3</filename>
+    <mp3 filename="female_100_kmh - Kopie.mp3">
+        <filename>female_100_kmh - Kopie.mp3</filename>
         <title>no_title</title>
-        <artist>bc</artist>
-        <album>no_album</album>
-        <genre>no_genre</genre>
-        <duration>60s</duration>
-    </mp3>
-    <mp3 filename="editierte_dinge.mp3">
-        <filename>editierte_dinge.mp3</filename>
-        <title>testtitle</title>
         <artist>bb</artist>
         <album>no_album</album>
-        <genre>Punk</genre>
-        <duration>3s</duration>
+        <genre>no_genre</genre>
+        <duration>34s</duration>
     </mp3>
-    <mp3 filename="no-copyright-music-417477.mp3">
-        <filename>no-copyright-music-417477.mp3</filename>
-        <title>t</title>
-        <artist>cc</artist>
+    <mp3 filename="female_100_kmh.mp3">
+        <filename>female_100_kmh.mp3</filename>
+        <title>no_title</title>
+        <artist>aa</artist>
         <album>no_album</album>
         <genre>no_genre</genre>
-        <duration>86s</duration>
+        <duration>34s</duration>
     </mp3>
 </files>

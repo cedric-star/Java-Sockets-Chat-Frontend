@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class MainAppWindow extends JFrame {
     private JPanel panel1;
     private JButton addNewSong;
     private JButton changeWeb;
+    private JButton showWeb;
 
     private JScrollPane scroller;
     private JPanel contentPanel;
@@ -38,6 +40,7 @@ public class MainAppWindow extends JFrame {
         changeWeb.addActionListener(e -> {
 
         });
+        showWeb.addActionListener(e -> showMP3Website());
     }
 
     private void setGui() {
@@ -46,8 +49,10 @@ public class MainAppWindow extends JFrame {
         JPanel bottomBtnPanel = new JPanel(new FlowLayout());
         addNewSong = new JButton("Add New Song");
         changeWeb = new JButton("Change Web");
+        showWeb = new JButton("View as Website");
         bottomBtnPanel.add(addNewSong);
         bottomBtnPanel.add(changeWeb);
+        bottomBtnPanel.add(showWeb);
 
         contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
@@ -58,7 +63,7 @@ public class MainAppWindow extends JFrame {
         panel1.add(bottomBtnPanel, BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1200, 800);
     }
 
     //wenn auf add new song geklickt
@@ -96,10 +101,10 @@ public class MainAppWindow extends JFrame {
 
         leftPanel.add(new JLabel("File: " + mp3.get(0)));
 
-        JTextField titleField  = new JTextField(mp3.get(1), 8);
-        JTextField artistField = new JTextField(mp3.get(2), 8);
-        JTextField albumField  = new JTextField(mp3.get(3), 8);
-        JTextField genreField  = new JTextField(mp3.get(4), 8);
+        JTextField titleField  = new JTextField(mp3.get(1));
+        JTextField artistField = new JTextField(mp3.get(2));
+        JTextField albumField  = new JTextField(mp3.get(3));
+        JTextField genreField  = new JTextField(mp3.get(4));
 
         leftPanel.add(new JLabel("Title"));
         leftPanel.add(titleField);
@@ -150,6 +155,21 @@ public class MainAppWindow extends JFrame {
 
     public String getUsername() {
         return username;
+    }
+
+    private void showMP3Website() {
+        client.syncFiles(username);
+        File baseDir = new File((username+"_data"));
+        File html = new File(baseDir, username+"_index.html");
+
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.browse(html.toURI());
+            }
+        } catch (Exception e2) {
+            System.err.println(e2.getMessage());
+        }
     }
 }
 //löschen von dateien wird glaube nicht korrekt synchronisiert
