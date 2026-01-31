@@ -37,9 +37,7 @@ public class MainAppWindow extends JFrame {
         setVisible(true);
 
         addNewSong.addActionListener(e -> addSong());
-        changeWeb.addActionListener(e -> {
-
-        });
+        changeWeb.addActionListener(e -> {new WebChangerWindow(client, username);});
         showWeb.addActionListener(e -> showMP3Website());
     }
 
