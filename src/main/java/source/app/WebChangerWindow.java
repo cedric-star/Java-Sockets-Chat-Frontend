@@ -50,6 +50,9 @@ public class WebChangerWindow extends JFrame {
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
+        JPanel chooseSorting = getSortingPanel();
+        content.add(chooseSorting);
+
         mainTextColorChooser = new JColorChooser();
         content.add(getChooserPanel("set main text color", mainTextColorChooser, "mainTextColor"));
 
@@ -73,6 +76,51 @@ public class WebChangerWindow extends JFrame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
+    }
+
+    private JPanel getSortingPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+
+        JLabel label = new JLabel("set sorting by attribute");
+        label.setFont(label.getFont().deriveFont(24f));
+        panel.add(label, BorderLayout.NORTH);
+
+
+        JPanel orderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JComboBox sortBy = new JComboBox();
+        sortBy.addItem("title");
+        sortBy.addItem("artist");
+        sortBy.addItem("album");
+        sortBy.addItem("genre");
+        sortBy.addItem("duration");
+        orderPanel.add(sortBy);
+
+
+        JCheckBox cb = new JCheckBox();
+        cb.setSelected(true);
+        cb.setText("ascending?");
+        orderPanel.add(cb);
+        panel.add(orderPanel, BorderLayout.CENTER);
+
+        JButton btn = new JButton("set order");
+        btn.addActionListener(e -> {
+            String attr = sortBy.getSelectedItem().toString();
+            System.out.println("orderby: "+attr);
+
+            String order = cb.isSelected() ? "ascending" : "descending";
+            System.out.println("order: "+order);
+
+            io.setFilesAttribute(user, "sortby", attr);
+
+            File xml2 = io.setFilesAttribute(user, "sortorder", order);
+
+            client.sendFile(user, xml2);
+        });
+        panel.add(btn, BorderLayout.EAST);
+
+        return panel;
     }
 
     private JPanel getChooserPanel(String title, JColorChooser jcc, String attributeName) {

@@ -286,6 +286,26 @@ public class IO {
         if (mp3File.exists() && mp3File.delete()) updateUserXML(user);
     }
 
+    public synchronized File setFilesAttribute(String user, String attributeName, String value) {
+        File xml = getUserXMLFile(user);
+
+        try {
+            System.out.println("setting attribute:"+attributeName+"="+value);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(xml);
+
+            NodeList nodeL = doc.getElementsByTagName("files");
+
+            if (nodeL.getLength() > 0) {
+                Element elem = (Element) nodeL.item(0);
+                elem.setAttribute(attributeName, value);
+            }
+            saveXML(xml, doc);
+        } catch (Exception e) {System.err.println(e);};
+        return xml;
+    }
+
     public synchronized File setStyleAttribute(String user, String attributeName, String value) {
         File xml = getUserXMLFile(user);
 
@@ -293,28 +313,28 @@ public class IO {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xml);
-            Element root = doc.getDocumentElement();
-            root.normalize();
-
 
             NodeList styleL = doc.getElementsByTagName("style");
+
             if (styleL.getLength() > 0) {
                 Element style = (Element) styleL.item(0);
                 style.setAttribute(attributeName, value);
             }
-
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(xml);
-            transformer.transform(source, result);
-
+            saveXML(xml, doc);
         } catch (Exception e) {System.err.println(e);};
+        return xml;
+    }
 
-        return getUserXMLFile(user);
+    private synchronized void saveXML(File xml, Document doc) throws Exception {
+
+        TransformerFactory tFactory = TransformerFactory.newInstance();
+        Transformer transformer = tFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(xml);
+        transformer.transform(source, result);
     }
 
     // Methode zum Abrufen aller MP3-Daten aus der XML
@@ -362,7 +382,7 @@ public class IO {
 
         try {
             audioFile = AudioFileIO.read(mp3file);
-            audioFile.logger.setLevel(Level.WARNING);
+            AudioFile.logger.setLevel(Level.WARNING);
 
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
 
@@ -387,6 +407,4 @@ public class IO {
         }
         return "";
     }
-
-
 }
