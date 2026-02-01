@@ -4,6 +4,10 @@ import javax.swing.*;
 
 public class Main {
 
+    /**
+     * App soll mit dem Login Fenster starten.
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {

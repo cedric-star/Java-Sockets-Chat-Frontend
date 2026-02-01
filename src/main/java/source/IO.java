@@ -293,6 +293,9 @@ public class IO {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xml);
+            Element root = doc.getDocumentElement();
+            root.normalize();
+
 
             NodeList styleL = doc.getElementsByTagName("style");
             if (styleL.getLength() > 0) {
