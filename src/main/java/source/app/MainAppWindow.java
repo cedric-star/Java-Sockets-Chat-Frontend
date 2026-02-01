@@ -1,15 +1,13 @@
 package source.app;
 
-import source.IO;
-import source.connection.MyClient;
-
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+
+import source.IO;
+import source.connection.MyClient;
 
 public class MainAppWindow extends JFrame {
 
@@ -17,16 +15,20 @@ public class MainAppWindow extends JFrame {
     private JButton addNewSong;
     private JButton changeWeb;
     private JButton showWeb;
-
     private JScrollPane scroller;
     private JPanel contentPanel;
 
-    private String username;
+    private String user;
     private MyClient client;
     private IO io;
 
-    public MainAppWindow(String username) {
-        this.username = username;
+    /**
+     * Dieses Fenster zeigt die Songs an. Hierüber können die Attribute wie Titel auch
+     * geändert werden.
+     * @param user
+     */
+    public MainAppWindow(String user) {
+        this.user = user;
         this.io = IO.getInstance();
         this.client = new MyClient(this);
 
@@ -37,10 +39,13 @@ public class MainAppWindow extends JFrame {
         setVisible(true);
 
         addNewSong.addActionListener(e -> addSong());
-        changeWeb.addActionListener(e -> {new WebChangerWindow(client, username);});
+        changeWeb.addActionListener(e -> {new WebChangerWindow(client, user);});
         showWeb.addActionListener(e -> showMP3Website());
     }
 
+    /**
+     * Anordnung und verschachteln der Komponenten.
+     */
     private void setGui() {
         panel1 = new JPanel(new BorderLayout());
 
@@ -64,35 +69,49 @@ public class MainAppWindow extends JFrame {
         setSize(1200, 800);
     }
 
-    //wenn auf add new song geklickt
+    /**
+     * Diese Methode wird ausgeführt, wenn der Button gedrückt wird, mit dem ein weiterer
+     * Song in die Bibliothek aufgenommen werden soll.
+     */
     private void addSong() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter("mp3 file", "mp3"));
 
         if (chooser.showOpenDialog(panel1) == JFileChooser.APPROVE_OPTION) {
             File mp3file = chooser.getSelectedFile();
-            io.saveFile(username, mp3file);
-            client.sendFile(username, mp3file);
+            io.saveFile(user, mp3file);
+            client.sendFile(user, mp3file);
             refreshDisplay();
         }
     }
 
-    //updatet display immer (song anzeige)
+    /**
+     * Das display listet alle Songs auf.
+     * Mit dieser Methode wird das Display neu erstellt, und zeichnet es neu, wenn ein Song
+     * hinzugefügt oder entfernt wurde.
+     * Ausschließlich der Inhalt des scrollers wird dabei aktualisiert.
+     */
     private void refreshDisplay() {
         contentPanel.removeAll();
 
-        io.getAllMP3Data(username).forEach(mp3 -> {
+        io.getAllMP3Data(user).forEach(mp3 -> {
             contentPanel.add(createSongPanel(mp3));
         });
-
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
-    //baut aus einer mp3 (infos) ein panel, in forschleife für display verwendet
+    /**
+     * Diese Methode nimmt Daten zu einer MP3-Datei und erstellt Anzeige mit Eingabefeldern zum
+     * Ändern der Metadaten.
+     * @param mp3 Strings sind nacheinander die Informationen über eine MP3-Datei.
+     *            Nacheinander: Dateiname, Titel, Artist, Album, Genre.
+     * @return @return Gibt Panel zu einem Song zurück.
+     */
     private JPanel createSongPanel(ArrayList<String> mp3) {
-
         JPanel itemPanel = new JPanel(new BorderLayout());
+
+        //Damit einzelne Zeilen später nicht über Bildschirm verteilt sind.
         itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -115,13 +134,13 @@ public class MainAppWindow extends JFrame {
 
         JButton deleteBtn = new JButton("Delete");
         deleteBtn.addActionListener(e -> {
-            io.deleteFile(username, mp3.get(0));
+            io.deleteFile(user, mp3.get(0));
             contentPanel.remove(itemPanel);
             contentPanel.revalidate();
             contentPanel.repaint();
 
-            client.deleteFile(username, mp3.get(0));
-            client.sendFile(username, new File (new File (username+"_data"), username+"_music.xml"));
+            client.deleteFile(user, mp3.get(0));
+            client.sendFile(user, new File (new File (user +"_data"), user +"_music.xml"));
         });
 
         JButton saveBtn = new JButton("Save Edit");
@@ -135,10 +154,10 @@ public class MainAppWindow extends JFrame {
             newMP3.set(4, genreField.getText());
 
             System.out.println("kkkkkkkkkk:"+newMP3.toString());
-            io.updateMP3XMLAttributes(username, newMP3);
+            io.updateMP3XMLAttributes(user, newMP3);
 
-            client.sendFile(username, new File (new File (username+"_data"),newMP3.get(0)));
-            client.sendFile(username, new File (new File (username+"_data"), username+"_music.xml"));
+            client.sendFile(user, new File (new File (user +"_data"),newMP3.get(0)));
+            client.sendFile(user, new File (new File (user +"_data"), user +"_music.xml"));
         });
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -151,14 +170,22 @@ public class MainAppWindow extends JFrame {
         return itemPanel;
     }
 
-    public String getUsername() {
-        return username;
+    /**
+     * Für MyClient benötigt.
+     * @return
+     */
+    public String getUser() {
+        return user;
     }
 
+    /**
+     * Methode öffnet über den Desktop den Browser und lädt in einem
+     * neuen Tab die HTML-Datei, für den jeweiligen Nutzer.
+     */
     private void showMP3Website() {
-        client.syncFiles(username);
-        File baseDir = new File((username+"_data"));
-        File html = new File(baseDir, username+"_index.html");
+        client.syncFiles(user);
+        File baseDir = new File((user +"_data"));
+        File html = new File(baseDir, user +"_index.html");
 
         try {
             if (Desktop.isDesktopSupported()) {
@@ -170,4 +197,3 @@ public class MainAppWindow extends JFrame {
         }
     }
 }
-//löschen von dateien wird glaube nicht korrekt synchronisiert

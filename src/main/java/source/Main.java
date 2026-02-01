@@ -16,6 +16,6 @@ public class Main {
         catch (Exception e) {
             System.err.println("Couldn't load look and feel");
         }
-        new MainFrame();
+        new LoginFrame();
     }
 }

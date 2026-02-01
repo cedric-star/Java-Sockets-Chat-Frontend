@@ -3,7 +3,6 @@ package source.connection;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.ArrayList;
 
 import source.IO;
 import source.app.MainAppWindow;
@@ -13,37 +12,44 @@ public class MyClient {
     private DataOutputStream out;
     private DataInputStream in;
     private final MainAppWindow mainWindow; // Direkter Verweis auf die MyChat Instanz
-    private ListenerThread listener;
-    private Thread listenerThread;
     private IO io;
 
+    /**
+     * Baut die Verbindung zum Server auf.
+     * @param win
+     */
     public MyClient(MainAppWindow win) { // MyChat im Konstruktor übergeben
         this.io = IO.getInstance();
         this.mainWindow = win;
         startConnection("localhost", 16969);
     }
 
+    /**
+     * Wird beim Starten der Verbindung einmalig ausgeführt und deklariert in und out.
+     * Außerdem werden zunächst alle Dateien aus dem Backend geholt.
+     * @param ip
+     * @param port
+     */
     private void startConnection(String ip, int port) {
         try {
             clientSocket = new Socket(ip, port);
             out = new DataOutputStream(clientSocket.getOutputStream());
             in = new DataInputStream(clientSocket.getInputStream());
 
-            syncFiles(mainWindow.getUsername());
-
+            syncFiles(mainWindow.getUser());
 
         } catch (IOException e) {
-            System.err.println("Could not connect to " + ip + ":" + port + "\n" + e.getMessage());
+            System.err.println("Verbindung zu " + ip + ":" + port + "fehlgeschlagen:\n" + e.getMessage());
         }
     }
 
-    private void startListening() {
-        listener = new ListenerThread(this);
-        listenerThread = new Thread(listener);
-        listenerThread.setDaemon(true);
-        listenerThread.start();
-    }
-
+    /**
+     * Sendet eine Datei eines Nutzers an das Backend. Dabei wird automatisch immer die Nutzer XML-Datei
+     * mitgesendet, da diese alle wichtigen Metadaten enthält. (Es kann demnach auch zweimal hintereinander die
+     * gleiche XML-Datei mit einem Methodenaufruf gesendet werden.)
+     * @param user
+     * @param file
+     */
     public void sendFile(String user, File file) {
         try {
             out.writeByte(1);
@@ -60,12 +66,16 @@ public class MyClient {
             out.write(Files.readAllBytes(xmlFile.toPath()));
             out.flush();
 
-
         } catch (IOException e) {
-            System.err.println("Fehler beim Senden: " + e.getMessage());
+            System.err.println("Fehler beim Senden:\n" + e.getMessage());
         }
     }
 
+    /**
+     * Sendet Nutzer und Dateiname ans Backend, dort wird passende Datei gefunden und gelöscht.
+     * @param user
+     * @param fileName
+     */
     public void deleteFile(String user, String fileName) {
         try {
             out.writeByte(2);
@@ -73,19 +83,21 @@ public class MyClient {
             out.writeUTF(fileName);
             out.flush();
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Fehler beim löschen:\n" + e.getMessage());
         }
     }
 
+    /**
+     * Vom Backend sollen alle Dateien zum Nutzer gesendet werden, diese werden anschließen gespeichert.
+     * @param user
+     */
     public void syncFiles(String user) {
         try {
             out.writeByte(3);
             out.writeUTF(user);
             out.flush();
 
-
             int fileNum = in.readInt();
-            ArrayList<File> files = new ArrayList<File>();
             for  (int i = 0; i < fileNum; i++) {
                 String fileName = in.readUTF();
                 Long fileLength = in.readLong();
@@ -94,30 +106,7 @@ public class MyClient {
                 io.saveFile(user, fileName, content);
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Fehler beim synchronisieren mit den Server:\n" + e.getMessage());
         }
-
-    }
-
-    public void stopConnection() {
-        try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (listener != null) listener.close();
-            if (listenerThread != null) listenerThread.interrupt();
-            if (clientSocket != null) clientSocket.close();
-            System.out.println("Socket geschlossen.");
-
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    public Socket getClientSocket() {
-        return clientSocket;
-    }
-
-    public DataInputStream getIn() {
-        return in;
     }
 }
