@@ -44,13 +44,13 @@ public class MyClient {
         listenerThread.start();
     }
 
-    public void sendFile(String user, File mp3file) {
+    public void sendFile(String user, File file) {
         try {
             out.writeByte(1);
             out.writeUTF(user);
-            out.writeUTF(mp3file.getName());
-            out.writeLong(mp3file.length());
-            out.write(Files.readAllBytes(mp3file.toPath()));
+            out.writeUTF(file.getName());
+            out.writeLong(file.length());
+            out.write(Files.readAllBytes(file.toPath()));
 
             File xmlFile = io.getUserXMLFile(user);
             out.writeByte(1);

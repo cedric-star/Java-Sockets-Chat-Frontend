@@ -1,9 +1,11 @@
 package source.app;
 
+import source.IO;
 import source.connection.MyClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class WebChangerWindow extends JFrame {
     MyClient client;
@@ -24,10 +26,13 @@ public class WebChangerWindow extends JFrame {
     JColorChooser tableRowTextColorChooser;
     JColorChooser tableHeadBackgroundColorChooser;
     JColorChooser tableRowBackgroundColorChooser;
-
     JPanel panel1;
+    private IO io;
 
     public WebChangerWindow(MyClient client, String user) {
+        this.io = IO.getInstance();
+        this.user = user;
+        this.client = client;
         setGui();
 
         setContentPane(panel1);
@@ -46,23 +51,22 @@ public class WebChangerWindow extends JFrame {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
         mainTextColorChooser = new JColorChooser();
-        content.add(getChooserPanel("set main text color", mainTextColorChooser));
+        content.add(getChooserPanel("set main text color", mainTextColorChooser, "mainTextColor"));
 
         backgroundColorChooser = new JColorChooser();
-        content.add(getChooserPanel("set background color", backgroundColorChooser));
+        content.add(getChooserPanel("set background color", backgroundColorChooser, "backgroundColor"));
 
         tableHeadTextColorChooser = new JColorChooser();
-        content.add(getChooserPanel("set table header text color", tableHeadTextColorChooser));
-
+        content.add(getChooserPanel("set table header text color", tableHeadTextColorChooser, "tableHeadTextColor"));
 
         tableRowTextColorChooser = new JColorChooser();
-        content.add(getChooserPanel("set table row text color", tableRowTextColorChooser));
+        content.add(getChooserPanel("set table row text color", tableRowTextColorChooser, "tableRowTextColor"));
 
         tableHeadBackgroundColorChooser = new JColorChooser();
-        content.add(getChooserPanel("set table hieader background color", tableHeadBackgroundColorChooser));
+        content.add(getChooserPanel("set table hieader background color", tableHeadBackgroundColorChooser, "tableHeadBackgroundColor"));
 
         tableRowBackgroundColorChooser = new JColorChooser();
-        content.add(getChooserPanel("set table row background color", tableRowBackgroundColorChooser));
+        content.add(getChooserPanel("set table row background color", tableRowBackgroundColorChooser, "tableRowBackgroundColor"));
 
         scroller = new JScrollPane(content);
         panel1.add(scroller, BorderLayout.CENTER);
@@ -71,17 +75,28 @@ public class WebChangerWindow extends JFrame {
         setSize(800, 600);
     }
 
-    private JPanel getChooserPanel(String title, JColorChooser jcc) {
+    private JPanel getChooserPanel(String title, JColorChooser jcc, String attributeName) {
         JPanel panel = new JPanel(new BorderLayout());
-
-        // Schwarze, dicke Border (3 Pixel dick)
+        JPanel center = new JPanel();
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 
         JLabel label = new JLabel(title);
         label.setFont(label.getFont().deriveFont(24f));
-        panel.add(label, BorderLayout.NORTH);
+        JButton expand = new JButton("toggle expand view");
+        expand.addActionListener(e -> {
+            if (center.isVisible()) {
+                center.setVisible(false);
+            } else {
+                center.setVisible(true);
+            }
+        });
 
-        panel.add(jcc, BorderLayout.CENTER);
+        JPanel top = new JPanel(new FlowLayout());
+        top.add(expand);
+        top.add(label);
+
+        panel.add(top, BorderLayout.NORTH);
 
         JButton btn = new JButton("set color");
         btn.addActionListener(e -> {
@@ -90,9 +105,16 @@ public class WebChangerWindow extends JFrame {
             System.out.println(temp);
             String hex = "#"+temp.substring(temp.length()-6);
             System.out.println(hex);
+
+            File xml = io.setStyleAttribute(user, attributeName, hex);
+            client.sendFile(user, xml);
         });
 
-        panel.add(btn, BorderLayout.EAST);
+        center.add(jcc);
+        center.add(btn);
+        center.setVisible(false);
+
+        panel.add(center, BorderLayout.CENTER);
         return panel;
     }
 }

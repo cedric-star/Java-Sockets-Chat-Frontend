@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -36,9 +37,6 @@ public class IO {
         }
         return INSTANCE;
     }
-
-    public void setUser(String user) {this.user = user;}
-    public String getUser() {return this.user;}
 
     //save mp3
     public synchronized File saveFile(String user, File f) {
@@ -178,6 +176,15 @@ public class IO {
                 }
             }
 
+            Element style = doc.createElement("style");
+            style.setAttribute("mainTextColor", "#0000ff");
+            style.setAttribute("backgroundColor", "#111111");
+            style.setAttribute("tableHeadTextColor", "#ffffff");
+            style.setAttribute("tableRowTextColor", "#000000");
+            style.setAttribute("tableHeadBackgroundColor", "#00ff00");
+            style.setAttribute("tableRowBackgroundColor", "#ffffff");
+            rootElement.appendChild(style);
+
             // XML in Datei schreiben
             File xmlFile = getUserXMLFile(user);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -203,7 +210,7 @@ public class IO {
 
         try {
             audioFile = AudioFileIO.read(mp3file);
-            audioFile.logger.setLevel(Level.WARNING);
+            AudioFile.logger.setLevel(Level.WARNING);
         } catch (Exception e) {
             System.err.println("Error reading audio file: " + mp3file.getAbsolutePath() + "\n" + e.getMessage());
             return null;
@@ -277,6 +284,34 @@ public class IO {
         File mp3File = new File(baseDir, fileName);
 
         if (mp3File.exists() && mp3File.delete()) updateUserXML(user);
+    }
+
+    public synchronized File setStyleAttribute(String user, String attributeName, String value) {
+        File xml = getUserXMLFile(user);
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(xml);
+
+            NodeList styleL = doc.getElementsByTagName("style");
+            if (styleL.getLength() > 0) {
+                Element style = (Element) styleL.item(0);
+                style.setAttribute(attributeName, value);
+            }
+
+            TransformerFactory tFactory = TransformerFactory.newInstance();
+            Transformer transformer = tFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(xml);
+            transformer.transform(source, result);
+
+        } catch (Exception e) {System.err.println(e);};
+
+        return getUserXMLFile(user);
     }
 
     // Methode zum Abrufen aller MP3-Daten aus der XML
