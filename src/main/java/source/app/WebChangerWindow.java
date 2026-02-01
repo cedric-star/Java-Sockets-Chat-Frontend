@@ -123,6 +123,7 @@ public class WebChangerWindow extends JFrame {
         return panel;
     }
 
+
     private JPanel getChooserPanel(String title, JColorChooser jcc, String attributeName) {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel center = new JPanel();
