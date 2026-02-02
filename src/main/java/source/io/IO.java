@@ -158,7 +158,6 @@ public class IO {
 
                 Document myDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml2);
 
-
                 String in1 = xpath.evaluate("/files/style/@mainTextColor", myDoc);
                 c1 = in1.isEmpty() ? c1 : in1;
                 String in2 = xpath.evaluate("/files/style/@backgroundColor", myDoc);
