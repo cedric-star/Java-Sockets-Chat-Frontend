@@ -129,26 +129,17 @@ public class IO {
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
 
-            // Wurzelelement erstellen
             Element rootElement = doc.createElement("files");
             rootElement.setAttribute("user", user);
-            rootElement.setAttribute("sortby", "artist");
-            rootElement.setAttribute("sortorder", "descending");
-            doc.appendChild(rootElement);
 
-            for (File mp3File : mp3Files) {
-                Element mp3Element = createMP3Element(doc, mp3File);
-                if (mp3Element != null) {
-                    rootElement.appendChild(mp3Element);
-                }
-            }
-
-            String c1 = "#0000ff";
-            String c2 = "#ffffff";
-            String c3 = "#ffffff";
-            String c4 = "#000000";
-            String c5 = "#00ff00";
-            String c6 = "#ffffff";
+            String sortby = "title";
+            String sortorder = "ascending";
+            String c1 = "#0000ff"; //blau
+            String c2 = "#020202"; //weiß
+            String c3 = "#ffffff"; //weiß
+            String c4 = "#000000"; //schwarz
+            String c5 = "#00ff00"; //grün
+            String c6 = "#00ffff"; //hellblau
 
             File xml2 = getUserXMLFile(user);
             System.out.println("testtest: "+xml2.exists());
@@ -157,6 +148,12 @@ public class IO {
                 XPath xpath = xpf.newXPath();
 
                 Document myDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml2);
+
+                String byIn = xpath.evaluate("/files/@sortby", myDoc);
+                sortby = byIn.isEmpty() ? sortby : byIn;
+
+                String orderIn = xpath.evaluate("/files/@sortorder", myDoc);
+                sortorder = orderIn.isEmpty() ? sortorder : orderIn;
 
                 String in1 = xpath.evaluate("/files/style/@mainTextColor", myDoc);
                 c1 = in1.isEmpty() ? c1 : in1;
@@ -172,6 +169,10 @@ public class IO {
                 c6 = in6.isEmpty() ? c6 : in6;
             }
 
+            rootElement.setAttribute("sortby", sortby);
+            rootElement.setAttribute("sortorder", sortorder);
+            doc.appendChild(rootElement);
+
             Element style = doc.createElement("style");
             style = doc.createElement("style");
             style.setAttribute("mainTextColor", c1);
@@ -181,6 +182,14 @@ public class IO {
             style.setAttribute("tableHeadBackgroundColor", c5);
             style.setAttribute("tableRowBackgroundColor", c6);
             rootElement.appendChild(style);
+
+
+            for (File mp3File : mp3Files) {
+                Element mp3Element = createMP3Element(doc, mp3File);
+                if (mp3Element != null) {
+                    rootElement.appendChild(mp3Element);
+                }
+            }
 
             File xml = getUserXMLFile(user);
             saveXML(xml, doc);
