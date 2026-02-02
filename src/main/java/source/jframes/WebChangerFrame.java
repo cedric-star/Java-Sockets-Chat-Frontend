@@ -12,7 +12,6 @@ public class WebChangerFrame extends BaseFrame {
     String user;
 
     JScrollPane scroller;
-    JPanel content;
     JColorChooser mainTextColorChooser;
     JColorChooser backgroundColorChooser;
     JColorChooser tableHeadTextColorChooser;
@@ -21,6 +20,11 @@ public class WebChangerFrame extends BaseFrame {
     JColorChooser tableRowBackgroundColorChooser;
     private IO io;
 
+    /**
+     * Fenster für das Ändern von Farben und Sortierungen der HTML-Seite.
+     * @param client
+     * @param user
+     */
     public WebChangerFrame(MyClient client, String user) {
         super("Change Web", "Change the look of your own Website");
         this.io = IO.getInstance();
@@ -30,6 +34,9 @@ public class WebChangerFrame extends BaseFrame {
         setGui();
     }
 
+    /**
+     * Komponenten verschachteln.
+     */
     private void setGui() {
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -57,12 +64,17 @@ public class WebChangerFrame extends BaseFrame {
 
         scroller = new JScrollPane(content);
 
-        wrapper.add(content, BorderLayout.CENTER);
+        JScrollPane scroller = new JScrollPane(content);
+        wrapper.add(scroller, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
     }
 
+    /**
+     * Generiert das Panel für die Auswahl der Sortieroptionen.
+     * @return
+     */
     private JPanel getSortingPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
@@ -81,7 +93,6 @@ public class WebChangerFrame extends BaseFrame {
         sortBy.addItem("genre");
         sortBy.addItem("duration");
         orderPanel.add(sortBy);
-
 
         JCheckBox cb = new JCheckBox();
         cb.setSelected(true);
@@ -108,7 +119,15 @@ public class WebChangerFrame extends BaseFrame {
         return panel;
     }
 
-
+    /**
+     * Wird für jede der 6 Farbauswahlmöglichkeiten verwendet, und verwendet zur
+     * Farbauswahl den JColorPicker.
+     * Die Fenster sind alle eingeklappt, da JColorPicker sehr viel Platz einnimmt.
+     * @param title
+     * @param jcc
+     * @param attributeName
+     * @return
+     */
     private JPanel getChooserPanel(String title, JColorChooser jcc, String attributeName) {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel center = new JPanel();

@@ -45,6 +45,5 @@ public class LoginFrame extends BaseFrame {
             new LibraryFrame(userName.getText());
             userName.setText("");
         }
-        //setVisible(false);
     }
 }

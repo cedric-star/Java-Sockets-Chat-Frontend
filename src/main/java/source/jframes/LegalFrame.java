@@ -5,11 +5,17 @@ import java.awt.*;
 
 public class LegalFrame extends BaseFrame{
 
+    /**
+     * Fenster für Impressum und Kontaktdaten.
+     */
     public LegalFrame(){
         super("Legal Information", "Contact Details and Legal Information");
         setGui();
     }
 
+    /**
+     * Anordnung und verschachteln der Komponenten.
+     */
     private void setGui() {
         JTextPane textPane = new JTextPane();
         textPane.setEditable(false);
@@ -19,6 +25,10 @@ public class LegalFrame extends BaseFrame{
         wrapper.add(new JLabel(""), BorderLayout.SOUTH);
     }
 
+    /**
+     * Text zusammenschreiben als String.
+     * @return
+     */
     private String getText() {
         StringBuilder sb = new StringBuilder();
 

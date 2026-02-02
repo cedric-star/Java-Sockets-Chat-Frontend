@@ -30,6 +30,10 @@ public class IO {
     private IO() {}
     private String user;
 
+    /**
+     * Diese Klasse ist als Singleton implementiert.
+     * @return
+     */
     public static IO getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new IO();
@@ -103,13 +107,16 @@ public class IO {
     }
 
     /**
-     * Wenn Metadaten einer MP3-Datei bearbeitet worden, wird die XML
+     * Wenn Metadaten einer MP3-Datei bearbeitet worden, wird die XML aktualisiert.
+     * Dabei werden die style und order Attribute auf default gesetzt, wenn es noch keine Datei gibt,
+     * oder auf die aus der existierenden XML-Datei ausgelesen und eingefüft.
      * @param user
      */
     private synchronized void updateUserXML(String user) {
         File baseDir = new File(user+"_data");
         if (!baseDir.exists()) baseDir.mkdirs();
 
+        //akzeptiere nur mp3 Dateien
         File[] mp3Files = baseDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -117,14 +124,7 @@ public class IO {
             }
         });
 
-        if (mp3Files == null || mp3Files.length == 0) {
-            System.out.println("No MP3 files found for user: " + user);
-            deleteFile(user, (user+"_music.xml"));
-            return;
-        }
-
         try {
-            // XML-Dokument erstellen
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
@@ -141,9 +141,11 @@ public class IO {
             String c5 = "#00ff00"; //grün
             String c6 = "#00ffff"; //hellblau
 
+            //attribute auslesen, wenn vorhanden
             File xml2 = getUserXMLFile(user);
             System.out.println("testtest: "+xml2.exists());
             if (xml2.exists()) {
+                //mit xpath weil hier realisiert wurde, dass es einfacher als getElementByTagName() ist
                 XPathFactory xpf = XPathFactory.newInstance();
                 XPath xpath = xpf.newXPath();
 
@@ -183,7 +185,7 @@ public class IO {
             style.setAttribute("tableRowBackgroundColor", c6);
             rootElement.appendChild(style);
 
-
+            //mp3 dateien auslesen und speichern
             for (File mp3File : mp3Files) {
                 Element mp3Element = createMP3Element(doc, mp3File);
                 if (mp3Element != null) {
@@ -199,15 +201,20 @@ public class IO {
     }
 
 
-
-
+    /**
+     * Eine MP3-Datei speichert als XML-Element (tag) die jeweiligen Elemente Titel, Artist, ...
+     * Die Metadaten der MP3-Datei werden ausgelesen und anschließend in die XML-Datei geschrieben.
+     * @param doc
+     * @param mp3file
+     * @return
+     */
     private synchronized Element createMP3Element(Document doc, File mp3file) {
         AudioFile audioFile;
         String filename = mp3file.getName();
 
         try {
             audioFile = AudioFileIO.read(mp3file);
-            AudioFile.logger.setLevel(Level.WARNING);
+            AudioFile.logger.setLevel(Level.OFF);
         } catch (Exception e) {
             System.err.println("Error reading audio file: " + mp3file.getAbsolutePath() + "\n" + e.getMessage());
             return null;
@@ -268,6 +275,11 @@ public class IO {
         return mp3Element;
     }
 
+    /**
+     * Löscht lokal die jeweilige Datei.
+     * @param user
+     * @param fileName
+     */
     public synchronized void deleteFile(String user, String fileName) {
         File baseDir = new File(user+"_data");
         File mp3File = new File(baseDir, fileName);
@@ -275,6 +287,13 @@ public class IO {
         if (mp3File.exists() && mp3File.delete()) updateUserXML(user);
     }
 
+    /**
+     * Setzt Attribute für /files/@... in der XML-Datei.
+     * @param user
+     * @param attributeName
+     * @param value
+     * @return
+     */
     public synchronized File setFilesAttribute(String user, String attributeName, String value) {
         File xml = getUserXMLFile(user);
 
@@ -295,6 +314,13 @@ public class IO {
         return xml;
     }
 
+    /**
+     * Setzt Attribute für /files/style/@... in der XML-Datei.
+     * @param user
+     * @param attributeName
+     * @param value
+     * @return
+     */
     public synchronized File setStyleAttribute(String user, String attributeName, String value) {
         File xml = getUserXMLFile(user);
 
@@ -314,8 +340,13 @@ public class IO {
         return xml;
     }
 
+    /**
+     * Hilfsmethode zum schreiben einer XML-Datei aus einem File Objekt.
+     * @param xml
+     * @param doc
+     * @throws Exception
+     */
     private synchronized void saveXML(File xml, Document doc) throws Exception {
-
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -326,7 +357,12 @@ public class IO {
         transformer.transform(source, result);
     }
 
-    // Methode zum Abrufen aller MP3-Daten aus der XML
+    /**
+     * Liest die XML-Datei aus, um für jeden Song alle Elemente zu erhalten.
+     * Nutzt eine Verschachtelte ArrayList: welcher Song > welche Attribute für diesen Song.
+     * @param user
+     * @return
+     */
     public synchronized ArrayList<ArrayList<String>> getAllMP3Data(String user) {
         ArrayList<ArrayList<String>> allData = new ArrayList<>();
         File xmlFile = getUserXMLFile(user);
@@ -363,6 +399,13 @@ public class IO {
         return allData;
     }
 
+    /**
+     * Nimmt eine Liste an Werten, um diese in den Header der MP3-Datei zu schreiben.
+     * Wird genutz, um anschließend die Werte daraus zu lesen und in der XML-Datei zu speichern.
+     * Diese Methode setzt aber nur die MP3-Metadaten.
+     * @param user
+     * @param vals
+     */
     public synchronized void updateMP3XMLAttributes(String user, ArrayList<String> vals) {
         AudioFile audioFile = null;
         String filename = vals.get(0);
@@ -385,10 +428,15 @@ public class IO {
             System.err.println("Error reading audio file: " + mp3file.getAbsolutePath() + "\n" + e.getMessage());
         }
 
-
         updateUserXML(user);
     }
 
+    /**
+     * Hilfsmethode die den Inhalt eines XML-Tags zurückgibt.
+     * @param parent
+     * @param tagName
+     * @return
+     */
     private String getElementText(Element parent, String tagName) {
         NodeList nodes = parent.getElementsByTagName(tagName);
         if (nodes.getLength() > 0) {

@@ -9,6 +9,11 @@ public abstract class BaseFrame extends JFrame {
 
     JPanel wrapper;
 
+    /**
+     * Erstellt Basisklasse für jedes Fenster.
+     * @param title Steht oben am Rand.
+     * @param head Überschrift im Norden jedes Fensters.
+     */
     public BaseFrame(String title, String head) {
         this.title = title;
         this.head = head;
@@ -17,6 +22,9 @@ public abstract class BaseFrame extends JFrame {
         createGui();
     }
 
+    /**
+     * Erstellt Komponenten.
+     */
     private void createGui() {
         setTitle(title);
 
