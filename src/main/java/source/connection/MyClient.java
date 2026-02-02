@@ -52,14 +52,14 @@ public class MyClient {
      */
     public void sendFile(String user, File file) {
         try {
-            out.writeByte(1);
+            out.writeByte(Commands.updateFile);
             out.writeUTF(user);
             out.writeUTF(file.getName());
             out.writeLong(file.length());
             out.write(Files.readAllBytes(file.toPath()));
 
             File xmlFile = io.getUserXMLFile(user);
-            out.writeByte(1);
+            out.writeByte(Commands.updateFile);
             out.writeUTF(user);
             out.writeUTF(xmlFile.getName());
             out.writeLong(xmlFile.length());
@@ -78,7 +78,7 @@ public class MyClient {
      */
     public void deleteFile(String user, String fileName) {
         try {
-            out.writeByte(2);
+            out.writeByte(Commands.deleteFile);
             out.writeUTF(user);
             out.writeUTF(fileName);
             out.flush();
@@ -93,7 +93,7 @@ public class MyClient {
      */
     public void syncFiles(String user) {
         try {
-            out.writeByte(3);
+            out.writeByte(Commands.syncAll);
             out.writeUTF(user);
             out.flush();
 
