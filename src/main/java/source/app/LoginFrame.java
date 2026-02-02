@@ -1,11 +1,9 @@
-package source;
+package source.app;
 
 import javax.swing.*;
 import java.awt.*;
 
-import source.app.MainAppWindow;
-
-public class LoginFrame extends JFrame {
+public class LoginFrame extends BaseFrame {
     JButton start = new JButton("Start App");
     JTextField userName = new JTextField(30);
 
@@ -14,17 +12,16 @@ public class LoginFrame extends JFrame {
      * Dieses Fenster wird beim Starten der App zu Beginn angezeigt.
      */
     public LoginFrame() {
+        super("Login/Register", "Login or Register");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setGUI();
-        setVisible(true);
+        setGui();
     }
 
     /**
      * Basis Komponenten des Login definieren.
      * Wenn der Nutzer existiert werden seine Dateien angezeigt, wenn nicht, wird er neu erstellt.
      */
-    private void setGUI() {
-        setTitle("Login/Register");
+    private void setGui() {
         setSize(600, 600);
 
         JPanel panel = new JPanel();
@@ -35,7 +32,7 @@ public class LoginFrame extends JFrame {
         start.addActionListener(e -> startApp());
         userName.addActionListener(e -> startApp());
 
-        add(panel);
+        wrapper.add(panel, BorderLayout.CENTER);
     }
 
     /**
@@ -45,7 +42,7 @@ public class LoginFrame extends JFrame {
      */
     private void startApp() {
         if (!userName.getText().isEmpty()) {
-            new MainAppWindow(userName.getText());
+            new LibraryFrame(userName.getText());
             userName.setText("");
         }
         //setVisible(false);

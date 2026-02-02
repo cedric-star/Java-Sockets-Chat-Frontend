@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import source.IO;
 import source.connection.MyClient;
 
-public class MainAppWindow extends JFrame {
+public class LibraryFrame extends BaseFrame {
 
     private JPanel panel1;
     private JButton addNewSong;
@@ -27,7 +27,8 @@ public class MainAppWindow extends JFrame {
      * geändert werden.
      * @param user
      */
-    public MainAppWindow(String user) {
+    public LibraryFrame(String user) {
+        super("Song Library", "Songs for: "+user);
         this.user = user;
         this.io = IO.getInstance();
         this.client = new MyClient(this);
@@ -35,11 +36,8 @@ public class MainAppWindow extends JFrame {
         setGui();
         refreshDisplay();
 
-        setContentPane(panel1);
-        setVisible(true);
-
         addNewSong.addActionListener(e -> addSong());
-        changeWeb.addActionListener(e -> {new WebChangerWindow(client, user);});
+        changeWeb.addActionListener(e -> {new WebChangerFrame(client, user);});
         showWeb.addActionListener(e -> showMP3Website());
     }
 
@@ -47,6 +45,7 @@ public class MainAppWindow extends JFrame {
      * Anordnung und verschachteln der Komponenten.
      */
     private void setGui() {
+
         panel1 = new JPanel(new BorderLayout());
 
         JPanel bottomBtnPanel = new JPanel(new FlowLayout());
@@ -67,6 +66,8 @@ public class MainAppWindow extends JFrame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1200, 800);
+
+        wrapper.add(panel1, BorderLayout.CENTER);
     }
 
     /**
@@ -174,9 +175,7 @@ public class MainAppWindow extends JFrame {
      * Für MyClient benötigt.
      * @return
      */
-    public String getUser() {
-        return user;
-    }
+    public String getUser() {return user;}
 
     /**
      * Methode öffnet über den Desktop den Browser und lädt in einem

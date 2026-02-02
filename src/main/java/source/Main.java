@@ -1,5 +1,7 @@
 package source;
 
+import source.app.LoginFrame;
+
 import javax.swing.*;
 
 public class Main {

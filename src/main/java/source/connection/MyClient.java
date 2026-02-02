@@ -5,20 +5,20 @@ import java.net.Socket;
 import java.nio.file.Files;
 
 import source.IO;
-import source.app.MainAppWindow;
+import source.app.LibraryFrame;
 
 public class MyClient {
     private Socket clientSocket;
     private DataOutputStream out;
     private DataInputStream in;
-    private final MainAppWindow mainWindow; // Direkter Verweis auf die MyChat Instanz
+    private final LibraryFrame mainWindow; // Direkter Verweis auf die MyChat Instanz
     private IO io;
 
     /**
      * Baut die Verbindung zum Server auf.
      * @param win
      */
-    public MyClient(MainAppWindow win) { // MyChat im Konstruktor übergeben
+    public MyClient(LibraryFrame win) { // MyChat im Konstruktor übergeben
         this.io = IO.getInstance();
         this.mainWindow = win;
         startConnection("localhost", 16969);

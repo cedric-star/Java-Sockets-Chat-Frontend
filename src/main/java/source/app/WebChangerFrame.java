@@ -7,16 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class WebChangerWindow extends JFrame {
+public class WebChangerFrame extends BaseFrame {
     MyClient client;
     String user;
-
-    /*Color mainTextColor;
-    Color backgroundColor;
-    Color tableHeadTextColor;
-    Color tableRowTextColor;
-    Color tableHeadBackgroundColor;
-    Color tableRowBackgroundColor;*/
 
     JScrollPane scroller;
     JPanel content;
@@ -26,27 +19,18 @@ public class WebChangerWindow extends JFrame {
     JColorChooser tableRowTextColorChooser;
     JColorChooser tableHeadBackgroundColorChooser;
     JColorChooser tableRowBackgroundColorChooser;
-    JPanel panel1;
     private IO io;
 
-    public WebChangerWindow(MyClient client, String user) {
+    public WebChangerFrame(MyClient client, String user) {
+        super("Change Web", "Change the look of your own Website");
         this.io = IO.getInstance();
         this.user = user;
         this.client = client;
-        setGui();
 
-        setContentPane(panel1);
-        setVisible(true);
+        setGui();
     }
 
     private void setGui() {
-        panel1 = new JPanel(new BorderLayout());
-
-        JLabel head = new JLabel("Choose your Design!!!");
-        head.setFont(head.getFont().deriveFont(34f));
-        panel1.add(head, BorderLayout.NORTH);
-
-
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
@@ -72,7 +56,8 @@ public class WebChangerWindow extends JFrame {
         content.add(getChooserPanel("set table row background color", tableRowBackgroundColorChooser, "tableRowBackgroundColor"));
 
         scroller = new JScrollPane(content);
-        panel1.add(scroller, BorderLayout.CENTER);
+
+        wrapper.add(content, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
@@ -131,7 +116,7 @@ public class WebChangerWindow extends JFrame {
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 
         JLabel label = new JLabel(title);
-        label.setFont(label.getFont().deriveFont(24f));
+        label.setFont(label.getFont().deriveFont(20f));
         JButton expand = new JButton("toggle expand view");
         expand.addActionListener(e -> {
             if (center.isVisible()) {
