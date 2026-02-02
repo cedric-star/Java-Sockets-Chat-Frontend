@@ -28,7 +28,6 @@ public class IO {
 
     private static IO INSTANCE;
     private IO() {}
-    private String user;
 
     /**
      * Diese Klasse ist als Singleton implementiert.
