@@ -1,6 +1,6 @@
 package source;
 
-import source.app.LoginFrame;
+import source.jframes.LoginFrame;
 
 import javax.swing.*;
 

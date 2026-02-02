@@ -1,4 +1,4 @@
-package source.app;
+package source.jframes;
 
 import javax.swing.*;
 import java.awt.*;

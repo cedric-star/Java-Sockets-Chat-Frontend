@@ -1,4 +1,4 @@
-package source.app;
+package source.jframes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,10 +14,10 @@ public abstract class BaseFrame extends JFrame {
         this.head = head;
 
         this.wrapper = new JPanel(new BorderLayout());
-        setGui();
+        createGui();
     }
 
-    private void setGui() {
+    private void createGui() {
         setTitle(title);
 
         JLabel header = new JLabel(head);

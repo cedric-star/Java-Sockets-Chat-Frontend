@@ -1,4 +1,4 @@
-package source;
+package source.io;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -8,7 +8,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -38,7 +37,13 @@ public class IO {
         return INSTANCE;
     }
 
-    //save mp3
+    /**
+     * Datei im korrekten user Ordner speichern.
+     * Wird aufgerufen, wenn ein neuer Song gespeichert wird.
+     * @param user
+     * @param f
+     * @return
+     */
     public synchronized File saveFile(String user, File f) {
         System.out.println("\nSaving File: "+f.getName());
 
@@ -54,12 +59,18 @@ public class IO {
         }
         System.out.println("File saved: "+newFile.getAbsolutePath());
 
-        // XML nach dem Speichern der MP3 aktualisieren
         updateUserXML(user);
-
         return newFile;
     }
 
+    /**
+     * Datei im korrekten user Ordner speichern.
+     * Aufruf kommt aus Socket ByteStream.
+     * @param user
+     * @param fileName
+     * @param content
+     * @return
+     */
     public synchronized File saveFile(String user, String fileName, byte[] content) {
         System.out.println("\nSaving File: "+fileName);
 
@@ -76,61 +87,14 @@ public class IO {
         }
         System.out.println("File saved: "+newFile.getAbsolutePath());
 
-        // XML nach speichern der MP3 aktualisieren
         updateUserXML(user);
-
         return newFile;
     }
 
-    public synchronized ArrayList<File> readAllMP3(String user) {
-        File baseDir = new File(user+"_data");
-        if (!baseDir.exists()) baseDir.mkdirs();
-
-        File[] files = baseDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".mp3");
-            }
-        });
-
-        // Wenn keine MP3s gefunden wurden, leere Liste zurückgeben
-        if (files == null) {
-            return new ArrayList<>();
-        }
-
-        System.out.println("Found " + files.length + " MP3 files");
-        ArrayList<File> mp3s = new ArrayList<File>(Arrays.asList(files));
-
-        // XML für alle MP3s generieren/aktualisieren
-        updateUserXML(user);
-
-        return mp3s;
-    }
-
-    public synchronized ArrayList<String> getXMLAttributes(File xml, String mp3FileName) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        ArrayList<String> attr = new ArrayList<>();
-
-        try {
-            builder = factory.newDocumentBuilder();
-            Document document = builder.parse(xml);
-
-            XPathFactory xpfactory = XPathFactory.newInstance();
-            XPath xpath = xpfactory.newXPath();
-            String base = "/files/mp3[@filename='" + mp3FileName + "']/";
-
-            attr.add(xpath.evaluate(base+"title", document));
-            attr.add(xpath.evaluate(base+"artist", document));
-            attr.add(xpath.evaluate(base+"album", document));
-            attr.add(xpath.evaluate(base+"genre", document));
-            attr.add(xpath.evaluate(base+"duration", document));
-
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        return attr;
-    }
-
+    /**
+     * @param user
+     * @return Passende XML-Datei für jeweiligen user.
+     */
     public synchronized File getUserXMLFile(String user) {
         File baseDir = new File(user+"_data");
         if (!baseDir.exists()) baseDir.mkdirs();
@@ -138,12 +102,16 @@ public class IO {
         return new File(baseDir, user + "_music.xml");
     }
 
+    /**
+     * Wenn Metadaten einer MP3-Datei bearbeitet worden, wird die XML
+     * @param user
+     */
     private synchronized void updateUserXML(String user) {
         File baseDir = new File(user+"_data");
         if (!baseDir.exists()) baseDir.mkdirs();
 
-        // Alle MP3-Dateien im Verzeichnis finden
         File[] mp3Files = baseDir.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".mp3");
             }
@@ -168,43 +136,64 @@ public class IO {
             rootElement.setAttribute("sortorder", "descending");
             doc.appendChild(rootElement);
 
-            // Für jede MP3-Datei ein Element hinzufügen
             for (File mp3File : mp3Files) {
-                Element mp3Element = createMP3Element(doc, mp3File, user);
+                Element mp3Element = createMP3Element(doc, mp3File);
                 if (mp3Element != null) {
                     rootElement.appendChild(mp3Element);
                 }
             }
 
+            String c1 = "#0000ff";
+            String c2 = "#ffffff";
+            String c3 = "#ffffff";
+            String c4 = "#000000";
+            String c5 = "#00ff00";
+            String c6 = "#ffffff";
+
+            File xml2 = getUserXMLFile(user);
+            System.out.println("testtest: "+xml2.exists());
+            if (xml2.exists()) {
+                XPathFactory xpf = XPathFactory.newInstance();
+                XPath xpath = xpf.newXPath();
+
+                Document myDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml2);
+
+
+                String in1 = xpath.evaluate("/files/style/@mainTextColor", myDoc);
+                c1 = in1.isEmpty() ? c1 : in1;
+                String in2 = xpath.evaluate("/files/style/@backgroundColor", myDoc);
+                c2 = in2.isEmpty() ? c2 : in2;
+                String in3 = xpath.evaluate("/files/style/@tableHeadTextColor", myDoc);
+                c3 = in3.isEmpty() ? c3 : in3;
+                String in4 = xpath.evaluate("/files/style/@tableRowTextColor", myDoc);
+                c4 = in4.isEmpty() ? c4 : in4;
+                String in5 = xpath.evaluate("/files/style/@tableHeadBackgroundColor", myDoc);
+                c5 = in5.isEmpty() ? c5 : in5;
+                String in6 = xpath.evaluate("/files/style/@tableRowBackgroundColor", myDoc);
+                c6 = in6.isEmpty() ? c6 : in6;
+            }
+
             Element style = doc.createElement("style");
-            style.setAttribute("mainTextColor", "#0000ff");
-            style.setAttribute("backgroundColor", "#111111");
-            style.setAttribute("tableHeadTextColor", "#ffffff");
-            style.setAttribute("tableRowTextColor", "#000000");
-            style.setAttribute("tableHeadBackgroundColor", "#00ff00");
-            style.setAttribute("tableRowBackgroundColor", "#ffffff");
+            style = doc.createElement("style");
+            style.setAttribute("mainTextColor", c1);
+            style.setAttribute("backgroundColor", c2);
+            style.setAttribute("tableHeadTextColor", c3);
+            style.setAttribute("tableRowTextColor", c4);
+            style.setAttribute("tableHeadBackgroundColor", c5);
+            style.setAttribute("tableRowBackgroundColor", c6);
             rootElement.appendChild(style);
 
-            // XML in Datei schreiben
-            File xmlFile = getUserXMLFile(user);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(xmlFile);
-            transformer.transform(source, result);
-
-            System.out.println("XML file updated: " + xmlFile.getAbsolutePath());
-
+            File xml = getUserXMLFile(user);
+            saveXML(xml, doc);
         } catch (Exception e) {
-            System.err.println("Error updating XML for user " + user + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private synchronized Element createMP3Element(Document doc, File mp3file, String user) {
+
+
+
+    private synchronized Element createMP3Element(Document doc, File mp3file) {
         AudioFile audioFile;
         String filename = mp3file.getName();
 
@@ -216,16 +205,13 @@ public class IO {
             return null;
         }
 
-        // MP3-Element erstellen
         Element mp3Element = doc.createElement("mp3");
         mp3Element.setAttribute("filename", filename);
 
-        // Filename-Element
         Element filenameElement = doc.createElement("filename");
         filenameElement.appendChild(doc.createTextNode(filename));
         mp3Element.appendChild(filenameElement);
 
-        // Title-Element
         Element titleElement = doc.createElement("title");
         try {
             String title = audioFile.getTag().getFirst(FieldKey.TITLE);
@@ -235,7 +221,6 @@ public class IO {
         }
         mp3Element.appendChild(titleElement);
 
-        // Artist-Element
         Element artistElement = doc.createElement("artist");
         try {
             String artist = audioFile.getTag().getFirst(FieldKey.ARTIST);
@@ -245,7 +230,6 @@ public class IO {
         }
         mp3Element.appendChild(artistElement);
 
-        // Album-Element
         Element albumElement = doc.createElement("album");
         try {
             String album = audioFile.getTag().getFirst(FieldKey.ALBUM);
@@ -255,7 +239,6 @@ public class IO {
         }
         mp3Element.appendChild(albumElement);
 
-        // Genre-Element
         Element genreElement = doc.createElement("genre");
         try {
             String genre = audioFile.getTag().getFirst(FieldKey.GENRE);
@@ -265,7 +248,6 @@ public class IO {
         }
         mp3Element.appendChild(genreElement);
 
-        // Duration-Element
         Element durationElement = doc.createElement("duration");
         try {
             String duration = Integer.toString(audioFile.getAudioHeader().getTrackLength()) + "s";
@@ -278,7 +260,6 @@ public class IO {
         return mp3Element;
     }
 
-    // Methode zum Löschen einer MP3 und Aktualisieren der XML
     public synchronized void deleteFile(String user, String fileName) {
         File baseDir = new File(user+"_data");
         File mp3File = new File(baseDir, fileName);

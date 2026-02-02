@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
-import source.IO;
-import source.app.LibraryFrame;
+import source.io.IO;
+import source.jframes.LibraryFrame;
 
 public class MyClient {
     private Socket clientSocket;

@@ -1,6 +1,6 @@
-package source.app;
+package source.jframes;
 
-import source.IO;
+import source.io.IO;
 import source.connection.MyClient;
 
 import javax.swing.*;

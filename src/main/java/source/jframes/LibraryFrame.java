@@ -1,4 +1,4 @@
-package source.app;
+package source.jframes;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -6,7 +6,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 
-import source.IO;
+import source.io.IO;
 import source.connection.MyClient;
 
 public class LibraryFrame extends BaseFrame {
